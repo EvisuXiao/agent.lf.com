@@ -2,17 +2,17 @@
   <div>
     <card>
       <div slot="header">
-        <cell is-link value="信息设置">
+        <cell is-link link="/user" value="信息设置">
           <img slot="icon" width="90" :src="user.avatar" alt="头像">
           <div slot="title">{{ user.name }}<br/>ID: {{ user.id }}</div>
         </cell>
       </div>
       <div slot="content" class="card-demo-flex">
-        <cell class="vux-1px-r" is-link>
+        <cell class="vux-1px-r" is-link link="/diamond/charge">
           <div slot="title">当前钻石<br/><span style="color: red; ">{{ user.diamond }}</span><br/>立即购买</div>
         </cell>
         <div class="vux-1px-r">
-          <cell class="vux-1px-r" is-link>
+          <cell class="vux-1px-r" is-link link="/user/withdraw">
             <div slot="title">可提现金额<br/><span style="color: red; ">{{ user.amount }}</span><br/>累计收益{{ user.total }}元
             </div>
           </cell>
@@ -25,8 +25,8 @@
       </cell>
       <cell title="我的团队" is-link link="/team"></cell>
       <cell title="钻石充值" is-link link="/diamond/charge"></cell>
-      <cell title="钻石变更记录" is-link></cell>
-      <cell title="资金记录" is-link></cell>
+      <cell title="钻石变更记录" is-link link="/diamond"></cell>
+      <cell title="资金记录" is-link link="/fund"></cell>
       <cell title="消息中心" is-link link="/notice"></cell>
       <cell title="帮助中心" is-link link="/help"></cell>
     </group>
