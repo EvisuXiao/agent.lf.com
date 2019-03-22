@@ -12,11 +12,31 @@
 </template>
 
 <script>
-  import {XHeader, Tab, TabItem, XTable, Cell, Icon, XDialog, XButton, XInput, Group} from 'vux'
+  import {
+    XHeader,
+    Tab,
+    TabItem,
+    XTable,
+    Cell,
+    Icon,
+    XDialog,
+    XButton,
+    XInput,
+    Group
+  } from 'vux'
 
   export default {
     components: {
-      XHeader, Tab, TabItem, XTable, Cell, Icon, XDialog, XButton, XInput, Group
+      XHeader,
+      Tab,
+      TabItem,
+      XTable,
+      Cell,
+      Icon,
+      XDialog,
+      XButton,
+      XInput,
+      Group
     },
     data () {
       return {

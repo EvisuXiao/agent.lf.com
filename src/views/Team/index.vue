@@ -11,6 +11,22 @@
       <tab-item @on-item-click="onItemClick">总代理</tab-item>
       <tab-item @on-item-click="onItemClick">代理</tab-item>
     </tab>
+    <!--<scroller v-model="scrollerStatus" height="-46" lock-x scrollbar-y ref="scroller" :bounce="isbounce" :use-pullup="showUp" :pullup-config="upobj" @on-pullup-loading="selPullUp" >-->
+      <!--<div class="box2">-->
+        <!--<p  v-for="list, index in lists">-->
+          <!--<router-link :to="{ path: list.id } ">-->
+        <!--<p style="height:40px;">-->
+          <!--<span class="spanMeetTitle" v-html='(index+1) + " . " + list.name' ></span>-->
+          <!--<span class="spanMeetStatu" v-html='list.status'></span>-->
+        <!--</p>-->
+        <!--<p class="prevSuper">-->
+          <!--<form-preview  header-label=""  header-value="" :bodyItems="list" :footer-buttons="buttons1"></form-preview>-->
+        <!--</p>-->
+        <!--</router-link>-->
+        <!--<hr>-->
+        <!--</p>-->
+      <!--</div>-->
+    <!--</scroller>-->
     <group>
       <x-table :cell-bordered="false">
         <thead>
@@ -43,11 +59,11 @@
 </template>
 
 <script>
-  import {XHeader, Tab, TabItem, XTable, Cell, Icon, XDialog, XButton, XInput, Group} from 'vux'
+  import {XHeader, Tab, TabItem, XTable, Cell, Icon, XDialog, XButton, XInput, Group, Scroller} from 'vux'
 
   export default {
     components: {
-      XHeader, Tab, TabItem, XTable, Cell, Icon, XDialog, XButton, XInput, Group
+      XHeader, Tab, TabItem, XTable, Cell, Icon, XDialog, XButton, XInput, Group, Scroller
     },
     data () {
       return {

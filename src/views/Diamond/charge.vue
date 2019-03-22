@@ -1,52 +1,60 @@
 <template>
-  <div>
-    <x-header :left-options="{ backText: '' }" title="充值"></x-header>
-    <group-title>请选择</group-title>
-    <group>
-      <checker>
-        <div v-for="(value, key) in price">
-        <checker-item v-model="key">{{ value }}钻<br />{{ key }}元</checker-item>
-        </div>
-      </checker>
-      <!--<grid :cols="3" :show-lr-borders="false" :show-vertical-dividers="false">-->
-        <!--<checker>-->
-          <!--<checker-item v-model="key">{{ value }}钻<br />{{ key }}元</checker-item>-->
-        <!--<grid-item v-for="(value, key) in price" :key="key">-->
-          <!--<span slot="label" class="grid-center">-->
-        <!--</grid-item>-->
-        <!--</checker>-->
-      <!--</grid>-->
-    </group>
-    <group>
-      <cell title="账户余额"></cell>
-      <cell>
-        <span slot="title">共{{ balance }}元可直接抵用{{ priceSelected }}元</span>
-        <span></span>
+  <div style="height:100%;">
+    <view-box>
+      <div>
+        <x-header :left-options="{ backText: '' }" title="充值"></x-header>
+        <group title="请选择">
+          <popup-radio title="钻石" :options="price" v-model="priceSelected">
+            <span slot-scope="props" slot="each-item">
+              {{ props.label }}钻石({{ price[props.index].key }}元)
+            </span>
+          </popup-radio>
+        </group>
+        <group>
+          <group title="账户余额">
+            <x-switch :title="switchText" v-model="useBalance"></x-switch>
+          </group>
+          <group title="充值方式">
+            <radio v-model="waySelected" :options="chargeWays">
+            </radio>
+          </group>
+        </group>
+        <group>
+          <cell title="商品金额"><span>￥{{ priceSelected }}</span></cell>
+        </group>
+        <confirm v-model="confirmShow">
+          <span>您选择了账户余额进行支付，订单将直接从您的账户余额中扣除{{ priceSelected }}元，请知悉</span>
+        </confirm>
+      </div>
+      <cell slot="bottom">
+        <div slot="title">支付金额: {{ priceSelected }}</div>
+        <x-button type="primary" text="立即购买" @click.native="submit"></x-button>
       </cell>
-      <cell title="充值方式"></cell>
-      <cell>
-        <img slot="icon" src="" alt="">
-        <span slot="title">支付宝(推荐)</span>
-        <!--<checklist :title="$t('Basic Usage')" :label-position="labelPosition" required :options="commonList" v-model="checklist001" @on-change="change"></checklist>-->
-      </cell>
-    </group>
-    <group>
-      <cell title="商品金额"><span>￥{{ priceSelected }}</span></cell>
-    </group>
+    </view-box>
   </div>
 </template>
 
+
 <script>
+  import AliPng from '../../assets/ali_pay.jpeg'
+  import WxPng from '../../assets/wx_pay.jpeg'
   import {
     XHeader,
     Cell,
     Checker,
     CheckerItem,
     Checklist,
+    Confirm,
     Group,
-    GroupTitle,
     Grid,
-    GridItem
+    GridItem,
+    Radio,
+    XSwitch,
+    ViewBox,
+    XButton,
+    Flexbox,
+    FlexboxItem,
+    PopupRadio
   } from 'vux'
 
   export default {
@@ -56,28 +64,77 @@
       Checker,
       CheckerItem,
       Checklist,
+      Confirm,
       Group,
-      GroupTitle,
       Grid,
-      GridItem
+      GridItem,
+      Radio,
+      XSwitch,
+      ViewBox,
+      XButton,
+      Flexbox,
+      FlexboxItem,
+      PopupRadio
     },
     data () {
       return {
-        price: {
-          25: 100,
-          75: 300,
-          125: 500,
-          250: 1000,
-          500: 2000,
-          750: 3000
-        },
+        price: [
+          {
+            key: 25,
+            value: 100
+          },
+          {
+            key: 75,
+            value: 300
+          },
+          {
+            key: 125,
+            value: 500
+          },
+          {
+            key: 250,
+            value: 1000
+          },
+          {
+            key: 500,
+            value: 2000
+          },
+          {
+            key: 750,
+            value: 3000
+          }
+        ],
         balance: 0,
-        priceSelected: 0
+        useBalance: true,
+        priceSelected: 25,
+        chargeWays: [
+          {
+            icon: AliPng,
+            key: 1,
+            value: '支付宝'
+          },
+          {
+            icon: WxPng,
+            key: 2,
+            value: '微信支付'
+          }
+        ],
+        waySelected: 1,
+        confirmShow: false
+      }
+    },
+    computed: {
+      switchText: function () {
+        return '共' + this.balance + '元可直接抵用' + this.priceSelected + '元'
       }
     },
     methods: {
-      showDetail () {
-        this.$router.push({path: '/team/detail'})
+      submit () {
+        if (this.useBalance) {
+          this.confirmShow = true
+        } else {
+
+        }
       }
     }
   }
@@ -91,5 +148,13 @@
   .logo {
     width: 100px;
     height: 100px
+  }
+
+  .demo1-item {
+    border: 1px solid #ececec;
+    padding: 5px 15px;
+  }
+  .demo1-item-selected {
+    border: 1px solid green;
   }
 </style>
