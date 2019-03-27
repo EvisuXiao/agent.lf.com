@@ -1,10 +1,5 @@
 <template>
-  <div>
-    <x-header :left-options="{ backText: '' }" title="资金记录">
-      <div slot="right" @click="show=true">
-        <icon type="search"></icon>
-      </div>
-    </x-header>
+  <layout title="资金记录" :show-icon="true" @on-click-icon="show=true">
     <group>
       <x-table :cell-bordered="false">
         <thead>
@@ -13,7 +8,7 @@
         </tr>
         </thead>
         <tbody>
-        <tr v-for="item in list" @click="showDetail">
+        <tr v-for="item in list" @click="showDetail(item)">
           <td v-for="(title, key) in titles">
             <span v-if="key === 'name'">{{ item[key] }}<br/>{{ item.ctime }}</span>
             <span v-else-if="key === 'amount'">{{ item.type === 1 ? '+' : '-'}}{{ item[key] }}</span>
@@ -30,15 +25,16 @@
         </group>
       </x-dialog>
     </group>
-  </div>
+  </layout>
 </template>
 
 <script>
+  import Layout from '../Layout'
   import {XHeader, Datetime, PopupPicker, Tab, TabItem, XTable, Cell, Icon, XDialog, XButton, XInput, Group, Scroller} from 'vux'
 
   export default {
     components: {
-      XHeader, Datetime, PopupPicker, Tab, TabItem, XTable, Cell, Icon, XDialog, XButton, XInput, Group, Scroller
+      Layout, XHeader, Datetime, PopupPicker, Tab, TabItem, XTable, Cell, Icon, XDialog, XButton, XInput, Group, Scroller
     },
     data () {
       return {

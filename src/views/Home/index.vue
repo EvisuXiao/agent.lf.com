@@ -23,7 +23,7 @@
       <cell title="我的收益" is-link>
         <div slot>今日收益<span style="color: red; ">{{ user.today }}</span>元</div>
       </cell>
-      <cell title="我的团队" is-link link="/team"></cell>
+      <cell title="我的代理" is-link link="/team"></cell>
       <cell title="钻石充值" is-link link="/diamond/charge"></cell>
       <cell title="钻石变更记录" is-link link="/diamond"></cell>
       <cell title="资金记录" is-link link="/fund"></cell>
