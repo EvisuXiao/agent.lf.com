@@ -1,51 +1,62 @@
 <template>
-  <div>
-    <x-header :left-options="{ backText: '' }" title="添加/授权"></x-header>
-    <group>
-      <x-input title="ID"></x-input>
-      <x-input title="昵称"></x-input>
-      <x-input title="手机号码"></x-input>
-      <x-input title="角色"></x-input>
-    </group>
-    <x-button type="primary">确认</x-button>
-  </div>
+  <layout title="申请代理">
+    <div>
+      <group>
+        <x-input title="玩家ID" text-align="right" :show-clear="false" v-model="uid">
+          <div slot="right" @click="search">
+            <icon type="search"></icon>
+          </div>
+        </x-input>
+        <cell title="名字">{{ user.name }}</cell>
+        <x-input title="手机号" text-align="right" v-model="user.phone"></x-input>
+      </group>
+      <group>
+        <x-button type="primary" :disabled="!user || !user.phone" style="border-radius:99px;" @click.native="submit">申请</x-button>
+      </group>
+    </div>
+  </layout>
 </template>
 
 <script>
+  import Layout from '../Layout'
   import {
-    XHeader,
-    Tab,
-    TabItem,
-    XTable,
     Cell,
     Icon,
-    XDialog,
     XButton,
     XInput,
     Group
   } from 'vux'
+  import { getUserInfo, applyMember } from '../../api'
 
   export default {
     components: {
-      XHeader,
-      Tab,
-      TabItem,
-      XTable,
+      Layout,
       Cell,
       Icon,
-      XDialog,
       XButton,
       XInput,
       Group
     },
     data () {
       return {
+        uid: 0,
         user: {}
       }
     },
     methods: {
-      onItemClick (index) {
-        console.log('on item click:', index)
+      search: function () {
+        if (this.uid) {
+          getUserInfo(this.uid).then(data => {
+            this.user = data
+          })
+        }
+      },
+      submit: function () {
+        applyMember(this.user.uid, this.user.phone).then(() => {
+          this.showToast('申请成功');
+          this.uid = 0;
+          this.user = {}
+        })
       }
     }
   }

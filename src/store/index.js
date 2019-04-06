@@ -1,10 +1,8 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
-import * as actions from './actions';
-import * as mutations from './mutations';
-import * as getters from './getters';
-import * as user from './user';
-import * as common from './common';
+import getters from './getters';
+import user from './user';
+import common from './common';
 Vue.use(Vuex);
 
 export default new Vuex.Store({
@@ -15,7 +13,5 @@ export default new Vuex.Store({
     user,
     common
   },
-  getters,
-  actions,
-  mutations
+  getters
 });

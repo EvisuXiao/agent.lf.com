@@ -1,20 +1,21 @@
 <template>
-  <div>
-    <x-header :left-options="{ backText: '' }" title="我的银行卡"></x-header>
-    <group>
-      <cell title="持卡人">{{ user }}</cell>
-      <x-input title="卡号" text-align="right" placeholder="请输入银行卡号" v-model="bank.card"></x-input>
-      <popup-picker title="所属银行" placeholder="请输入所属银行" :data="bankList" v-model="bank.bank"></popup-picker>
-      <x-address title="地区" placeholder="请选择地区" v-model="bank.area" :list="addressData"></x-address>
-      <x-input title="开户行所在地" text-align="right" placeholder="请输入开户行所在地" v-model="bank.branch"></x-input>
-      <x-button type="primary">添加银行卡</x-button>
-    </group>
-  </div>
+  <layout title="添加银行卡">
+    <div>
+      <group>
+        <x-input title="持卡人" text-align="right" placeholder="请输入真实姓名" v-model="card.name"></x-input>
+        <x-input title="卡号" text-align="right" placeholder="请输入银行卡号" v-model="card.cardNum"></x-input>
+        <popup-picker title="所属银行" placeholder="请输入所属银行" :data="bankList" v-model="card.bankName"></popup-picker>
+      </group>
+      <group>
+        <x-button type="primary" style="border-radius:99px;" :disabled="!card.name || !card.cardNum || !card.bankName.length" @click.native="submit">添加银行卡</x-button>
+      </group>
+    </div>
+  </layout>
 </template>
 
 <script>
+  import Layout from '../Layout'
   import {
-    XHeader,
     Cell,
     PopupPicker,
     Group,
@@ -23,10 +24,11 @@
     ChinaAddressV4Data,
     XButton
   } from 'vux'
+  import { optBankCard } from '../../api'
 
   export default {
     components: {
-      XHeader,
+      Layout,
       Cell,
       PopupPicker,
       Group,
@@ -37,12 +39,10 @@
     },
     data () {
       return {
-        user: '张三',
-        bank: {
-          card: '',
-          bank: [],
-          area: [],
-          branch: ''
+        card: {
+          name: '',
+          bankName: [],
+          cardNum: ''
         },
         bankList: [
           [
@@ -60,20 +60,21 @@
             '华夏银行',
             '广东发展银行'
           ]
-        ],
-        addressData: ChinaAddressV4Data
+        ]
+      }
+    },
+    methods: {
+      submit () {
+        this.showConfirm('是否添加银行卡', () => {
+          optBankCard(this.card.name, this.card.bankName[0], this.card.cardNum).then(() => {
+            this.$router.go(-1)
+          })
+        })
       }
     }
   }
 </script>
 
 <style>
-  .vux-demo {
-    text-align: center;
-  }
 
-  .logo {
-    width: 100px;
-    height: 100px
-  }
 </style>

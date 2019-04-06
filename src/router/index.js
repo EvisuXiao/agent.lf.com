@@ -1,9 +1,12 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import Home from '../views/Home'
+import Login from '../views/User/login'
 import User from '../views/User'
 import UserMobile from '../views/User/mobile'
+import UserAuth from '../views/User/auth'
 import UserPassword from '../views/User/password'
+import UserForget from '../views/User/forget'
 import UserBank from '../views/User/bank'
 import UserBankAdd from '../views/User/bankAdd'
 import UserBankDetail from '../views/User/bankDetail'
@@ -11,15 +14,19 @@ import UserWithdraw from '../views/User/withdraw'
 import Team from '../views/Team'
 import TeamDetail from '../views/Team/detail'
 import TeamAdd from '../views/Team/add'
+import TeamApply from '../views/Team/apply'
 import Diamond from '../views/Diamond'
 import DiamondDetail from '../views/Diamond/detail'
 import DiamondCharge from '../views/Diamond/Charge'
+import DiamondSell from '../views/Diamond/sell'
+import DiamondChange from '../views/Diamond/change'
+import DiamondChangeDetail from '../views/Diamond/changeDetail'
 import Fund from '../views/Fund'
 import FundDetail from '../views/Fund/detail'
 import Notice from '../views/Notice'
 import Help from '../views/Help'
 
-Vue.use(Router)
+Vue.use(Router);
 
 export default new Router({
   routes: [
@@ -34,14 +41,29 @@ export default new Router({
       component: User
     },
     {
+      path: '/login',
+      name: 'Login',
+      component: Login
+    },
+    {
       path: '/user/mobile',
       name: 'UserMobile',
       component: UserMobile
     },
     {
+      path: '/user/auth',
+      name: 'UserAuth',
+      component: UserAuth
+    },
+    {
       path: '/user/password',
       name: 'UserPassword',
       component: UserPassword
+    },
+    {
+      path: '/user/forget',
+      name: 'UserForget',
+      component: UserForget
     },
     {
       path: '/user/bank',
@@ -79,6 +101,11 @@ export default new Router({
       component: TeamAdd
     },
     {
+      path: '/team/apply',
+      name: 'TeamApply',
+      component: TeamApply
+    },
+    {
       path: '/diamond',
       name: 'Diamond',
       component: Diamond
@@ -89,9 +116,24 @@ export default new Router({
       component: DiamondDetail
     },
     {
+      path: '/diamond/sell',
+      name: 'DiamondSell',
+      component: DiamondSell
+    },
+    {
       path: '/diamond/charge',
       name: 'DiamondCharge',
       component: DiamondCharge
+    },
+    {
+      path: '/diamond/change',
+      name: 'DiamondChange',
+      component: DiamondChange
+    },
+    {
+      path: '/diamond/changeDetail',
+      name: 'DiamondChangeDetail',
+      component: DiamondChangeDetail
     },
     {
       path: '/fund',

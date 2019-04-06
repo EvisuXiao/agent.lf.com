@@ -98,6 +98,8 @@
           amount: '数量'
         },
         total: 100,
+        startTime: null,
+        endTime: null,
         show: false,
         searchText: ''
       }

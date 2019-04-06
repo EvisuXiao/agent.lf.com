@@ -17,9 +17,6 @@
       XHeader
     },
     methods: {
-      onItemClick (index) {
-        console.log('on item click:', index)
-      },
       showDetail () {
         this.$router.push({path: '/team/detail'})
       }
@@ -28,12 +25,5 @@
 </script>
 
 <style>
-  .vux-demo {
-    text-align: center;
-  }
 
-  .logo {
-    width: 100px;
-    height: 100px
-  }
 </style>

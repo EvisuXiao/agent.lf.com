@@ -4,34 +4,49 @@
       <div slot="header">
         <cell is-link link="/user" value="信息设置">
           <img slot="icon" width="90" :src="user.avatar" alt="头像">
-          <div slot="title">{{ user.name }}<br/>ID: {{ user.id }}</div>
+          <div slot="title">{{ uInfo.name }}<br/>ID: {{ uInfo.mid }}</div>
         </cell>
       </div>
       <div slot="content" class="card-demo-flex">
         <cell class="vux-1px-r" is-link link="/diamond/charge">
-          <div slot="title">当前钻石<br/><span style="color: red; ">{{ user.diamond }}</span><br/>立即购买</div>
+          <div slot="title">当前钻石<br/><span style="color: red; ">{{ uInfo.money }}</span><br/>立即购买</div>
         </cell>
         <div class="vux-1px-r">
-          <cell class="vux-1px-r" is-link link="/user/withdraw">
-            <div slot="title">可提现金额<br/><span style="color: red; ">{{ user.amount }}</span><br/>累计收益{{ user.total }}元
+          <cell v-if="rebateMode" class="vux-1px-r" is-link link="/user/withdraw">
+            <div slot="title">可提现金额<br/><span style="color: red; ">{{ uInfo.rebate }}</span><br/>累计收益{{ uInfo.rebateAll }}元
+            </div>
+          </cell>
+          <cell v-else class="vux-1px-r" is-link link="/diamond/sell">
+            <div slot="title">当日销售<br/><span style="color: red; ">{{ uInfo.todaySell }}</span><br/>
             </div>
           </cell>
         </div>
       </div>
     </card>
-    <group>
+    <!--返利模式-->
+    <group v-if="rebateMode">
       <cell title="我的收益" is-link>
-        <div slot>今日收益<span style="color: red; ">{{ user.today }}</span>元</div>
+        <div slot>今日收益<span style="color: red; ">{{ uInfo.todayRebate }}</span>元</div>
       </cell>
       <cell title="我的代理" is-link link="/team"></cell>
       <cell title="钻石充值" is-link link="/diamond/charge"></cell>
-      <cell title="钻石变更记录" is-link link="/diamond"></cell>
+      <cell title="我的账单" is-link link="/fund"></cell>
       <cell title="资金记录" is-link link="/fund"></cell>
       <cell title="消息中心" is-link link="/notice"></cell>
       <cell title="帮助中心" is-link link="/help"></cell>
     </group>
+    <!--普通模式-->
+    <group v-else>
+      <cell title="我的代理" is-link link="/team"></cell>
+      <cell title="钻石充值" is-link link="/diamond/charge"></cell>
+      <cell title="出售钻石" is-link link="/diamond/sell"></cell>
+      <cell title="我的账单" is-link link="/diamond/change"></cell>
+      <cell title="代理申请" is-link link="/team/apply"></cell>
+      <cell title="消息中心" is-link link="/notice"></cell>
+      <cell title="帮助中心" is-link link="/help"></cell>
+    </group>
     <group>
-      <x-button type="warn" style="border-radius:99px;">退出</x-button>
+      <x-button type="warn" style="border-radius:99px;" @click.native="logout">退出</x-button>
     </group>
   </div>
 </template>
@@ -44,6 +59,8 @@
     XButton
   } from 'vux'
   import Avatar from '../../assets/vux_logo.png'
+  import { logout } from '../../api'
+  import { isRebateMode } from '../../utils'
 
   export default {
     components: {
@@ -55,15 +72,27 @@
     data () {
       return {
         user: {
-          id: 123,
-          name: '代理商123',
-          avatar: Avatar,
-          diamond: 567,
-          today: 26,
-          amount: 823.1,
-          total: 1234.2
+          avatar: Avatar
         }
-      };
+      }
+    },
+    computed: {
+      uInfo: function () {
+        return this.$store.getters.userInfo
+      },
+      rebateMode: function () {
+        return isRebateMode()
+      }
+    },
+    methods: {
+      logout () {
+        logout().then(() => {
+          this.showToast('退出成功');
+          setTimeout(() => {
+            this.$router.push({path: '/login'})
+          }, 2000)
+        })
+      }
     }
   };
 </script>

@@ -17,9 +17,10 @@ module.exports = {
       },
       '/': {
         // target: 'http://xm.pullmi.cn',
-        target: 'http://127.0.0.1:8888',
+        target: 'http://120.27.234.219:888',
+        // target: 'http://127.0.0.1:8888',
         changeOrigin: true,
-      }
+      },
     },
 
     // Various Dev Server settings

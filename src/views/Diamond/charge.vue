@@ -17,22 +17,20 @@
       <group>
         <cell title="商品金额"><span>￥{{ priceSelected }}</span></cell>
       </group>
-      <confirm v-model="confirmShow">
-        <span>您选择了账户余额进行支付，订单将直接从您的账户余额中扣除{{ priceSelected }}元，请知悉</span>
-      </confirm>
     </div>
-    <cell slot="bottom">
-      <div slot="title">支付金额: {{ priceSelected }}</div>
-      <x-button type="primary" text="立即购买" @click.native="submit"></x-button>
-    </cell>
+    <group slot="bottom" :gutter="0">
+      <cell>
+        <div slot="title">支付金额: {{ priceSelected }}</div>
+        <x-button type="primary" :disabled="!waySelected" text="立即购买" @click.native="submit"></x-button>
+      </cell>
+    </group>
   </layout>
 </template>
 
 
 <script>
   import BalancePng from '../../assets/balance_pay.png'
-  import AliPng from '../../assets/ali_pay.jpeg'
-  import WxPng from '../../assets/wx_pay.jpeg'
+  import AiBeiPng from '../../assets/aibei_pay.jpg'
   import Layout from '../Layout'
   import {
     XHeader,
@@ -40,18 +38,17 @@
     Checker,
     CheckerItem,
     Checklist,
-    Confirm,
     Group,
     Grid,
     GridItem,
     Radio,
-    XSwitch,
-    ViewBox,
     XButton,
     Flexbox,
     FlexboxItem,
     PopupRadio
   } from 'vux'
+  import { getPayCfg, chargeMoney } from '../../api'
+  import { sortArrObj } from '../../utils'
 
   export default {
     components: {
@@ -61,13 +58,10 @@
       Checker,
       CheckerItem,
       Checklist,
-      Confirm,
       Group,
       Grid,
       GridItem,
       Radio,
-      XSwitch,
-      ViewBox,
       XButton,
       Flexbox,
       FlexboxItem,
@@ -75,67 +69,54 @@
     },
     data () {
       return {
-        price: [
-          {
-            key: 25,
-            value: 100
-          },
-          {
-            key: 75,
-            value: 300
-          },
-          {
-            key: 125,
-            value: 500
-          },
-          {
-            key: 250,
-            value: 1000
-          },
-          {
-            key: 500,
-            value: 2000
-          },
-          {
-            key: 750,
-            value: 3000
-          }
-        ],
-        balance: 0,
-        priceSelected: 25,
+        price: [],
+        priceMap: {},
+        priceSelected: 0,
         chargeWays: [
           {
             icon: BalancePng,
-            key: 1,
+            key: 'rebate',
             value: '余额支付'
           },
           {
-            icon: AliPng,
-            key: 2,
-            value: '支付宝'
-          },
-          {
-            icon: WxPng,
-            key: 3,
-            value: '微信支付'
+            icon: AiBeiPng,
+            key: 'aiBei',
+            value: '爱贝支付'
           }
         ],
-        waySelected: 1,
-        confirmShow: false
+        waySelected: 'rebate'
       }
     },
     computed: {
       switchText: function () {
         return '共' + this.balance + '元可直接抵用' + this.priceSelected + '元'
+      },
+      balance: function () {
+        return this.$store.getters.userInfo.money
       }
     },
+    created () {
+      this.getPayCfg();
+    },
     methods: {
+      getPayCfg () {
+        getPayCfg().then(data => {
+          if (data) {
+            this.price = [];
+            this.priceMap = {};
+            for (let i in data) {
+              this.priceMap[data[i].rmb] = data[i].num;
+              this.price.push({key: data[i].rmb, value: data[i].num})
+            }
+            sortArrObj(this.price, 'key');
+            this.priceSelected = this.price[0].key
+          }
+        })
+      },
       submit () {
-        if (this.useBalance) {
-          this.confirmShow = true
-        } else {
-
-        }
+        this.showConfirm('确定支付' + this.priceSelected + '元', function () {
+          chargeMoney(this.priceMap[this.priceSelected], this.priceSelected, this.waySelected)
+        })
       }
     }
   }

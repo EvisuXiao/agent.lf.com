@@ -1,58 +1,52 @@
 <template>
-  <div>
-    <x-header :left-options="{ backText: '' }" title="个人信息"></x-header>
+  <layout title="个人信息">
     <group>
-      <cell title="ID">{{ user.id }}</cell>
-      <cell title="姓名">{{ user.name }}</cell>
-      <cell title="角色">{{ user.role }}</cell>
-      <cell title="最高返利" is-link link="/help">
-        <span>{{ user.rebate }}%</span>
+      <cell title="ID">{{ info.mid }}</cell>
+      <cell title="姓名">{{ info.name }}</cell>
+      <cell title="角色">{{ levelName(info.level) }}</cell>
+      <cell v-if="rebateMode" title="最高返利" is-link link="/help">
+        <span>{{ info.rebate }}%</span>
       </cell>
-      <cell title="手机号码" is-link link="/user/mobile">{{ user.mobile }}</cell>
-      <cell title="我的邀请人">{{ user.inviter }}</cell>
+      <cell title="手机号码" is-link link="/user/mobile">{{ info.phone }}</cell>
+      <cell title="我的邀请人">{{ info.name }}</cell>
     </group>
     <group>
       <cell title="修改密码" is-link link="/user/password"></cell>
       <cell title="我的银行卡" is-link link="/user/bank"></cell>
     </group>
-  </div>
+  </layout>
 </template>
 
 <script>
+  import Layout from '../Layout'
   import {
-    XHeader,
     Cell,
     Group
   } from 'vux'
+  import { isRebateMode, levelName } from '../../utils'
 
   export default {
     components: {
-      XHeader,
+      Layout,
       Cell,
       Group
     },
-    data () {
-      return {
-        user: {
-          id: 12345,
-          name: '代理人1244',
-          role: '总代理',
-          rebate: 50,
-          mobile: '13800138000',
-          inviter: '代理人2555'
-        }
+    computed: {
+      info: function () {
+        return this.$store.getters.userInfo
+      },
+      rebateMode: function () {
+        return isRebateMode()
+      }
+    },
+    methods: {
+      levelName (level) {
+        return levelName(level)
       }
     }
   }
 </script>
 
 <style>
-  .vux-demo {
-    text-align: center;
-  }
 
-  .logo {
-    width: 100px;
-    height: 100px
-  }
 </style>

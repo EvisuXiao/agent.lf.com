@@ -1,7 +1,7 @@
 <template>
-  <layout title="我的代理" :show-icon="true" @search-hide="fetchData(true)">
+  <layout title="代理申请">
     <tab slot="header">
-      <tab-item v-for="(value, key) in tabLabel" :key="key" :selected="parseInt(key) === 0" @on-item-click="onItemClick(key)">{{ value }}</tab-item>
+      <tab-item v-for="(value, key) in tabLabel" :key="key" :selected="key === 0" @on-item-click="onItemClick(key)">{{ value }}</tab-item>
     </tab>
     <div>
       <scroller
@@ -14,24 +14,22 @@
         @on-pullup-loading="fetchData(false)"
         @on-pulldown-loading="fetchData(true)" >
         <div>
-          <group v-if="list.length" :gutter="0">
+          <group>
             <x-table :cell-bordered="false">
               <thead>
               <tr>
-                <th>用户名/ID</th>
-                <th>钻石剩余</th>
-                <th>代理等级</th>
-                <th v-if="rebateMode">累计返利</th>
-                <th v-else>推荐时间</th>
+                <th>ID</th>
+                <th>用户名</th>
+                <th>手机号</th>
+                <th>状态</th>
               </tr>
               </thead>
               <tbody>
-              <tr v-for="item in list" @click="showDetail(item.mid)">
-                <td>{{ item.name }}<br/>ID: {{ item.mid }}</td>
-                <td>{{ item.money }}</td>
-                <td>{{ levelName(item.level) }}</td>
-                <td v-if="rebateMode">{{ item.rebate }}</td>
-                <td v-else>{{ milli2Datetime(item.recTime, 'YYYY-MM-DD') }}<br />{{ milli2Datetime(item.recTime, 'HH:mm:ss') }}</td>
+              <tr v-for="item in list" @click="cancel(item.uid, item.phone)">
+                <td>{{ item.uid }}</td>
+                <td>{{ item.name }}</td>
+                <td>{{ item.phone }}</td>
+                <td>{{ statusMap(item.stat) }}</td>
               </tr>
               </tbody>
             </x-table>
@@ -49,26 +47,20 @@
     <group slot="bottom" :gutter="0">
       <cell>
         <div slot="title">总人数: {{ total }}</div>
-        <!--<div slot>-->
-        <!--<x-button type="primary" link="/team/add">添加代理</x-button>-->
-        <!--</div>-->
+        <x-button type="primary" link="/team/add">申请</x-button>
       </cell>
-    </group>
-    <group slot="search" :gutter="0">
-      <x-input title="ID" text-align="right" v-model="searchMid"></x-input>
     </group>
   </layout>
 </template>
 
 <script>
   import Layout from '../Layout'
-  import { Tab, TabItem, XTable, Cell, XDialog, XButton, XInput, Group, Scroller, LoadMore } from 'vux'
-  import { milli2Datetime, levelTab, isRebateMode, levelName } from '../../utils'
-  import { getMemberList } from '../../api'
+  import {Tab, TabItem, XTable, Cell, Icon, XButton, Group, Scroller, LoadMore} from 'vux'
+  import { getApplyList, applyMember } from '../../api'
 
   export default {
     components: {
-      Layout, Tab, TabItem, XTable, Cell, XDialog, XButton, XInput, Group, Scroller, LoadMore
+      Layout, Tab, TabItem, XTable, Cell, Icon, XButton, Group, Scroller, LoadMore
     },
     data () {
       return {
@@ -81,7 +73,7 @@
         },
         curTab: 0,
         total: 0,
-        searchMid: 0
+        tabLabel: ['全部', '申请中', '已通过', '被拒绝', '已取消']
       }
     },
     mounted () {
@@ -90,17 +82,9 @@
         this.$refs.scroller.reset()
       })
     },
-    computed: {
-      tabLabel: function () {
-        return levelTab()
-      },
-      rebateMode: function () {
-        return isRebateMode()
-      }
-    },
     methods: {
       fetchData (first = false) {
-        getMemberList(first ? 1 : this.page + 1, this.pageSize, this.searchMid, this.curTab).then(response => {
+        getApplyList(first ? 1 : this.page + 1, this.pageSize, this.curTab - 1).then(response => {
           const newList = response.info;
           if (first) {
             this.list = newList;
@@ -127,25 +111,26 @@
         this.curTab = index;
         this.fetchData(true)
       },
-      milli2Datetime (ms, fmt = 'YYYY-MM-DD HH:mm:ss') {
-        return milli2Datetime(ms, fmt)
+      statusMap (status) {
+        const map = {
+          0: '申请中',
+          1: '已通过',
+          2: '被拒绝',
+          3: '已取消'
+        };
+        return map[status]
       },
-      levelName (level) {
-        return levelName(level)
-      },
-      showDetail (mid) {
-        this.$router.push({path: '/team/detail', query: {mid: mid}})
+      cancel (uid, phone) {
+        this.showConfirm('是否取消申请代理' + uid, () => {
+          applyMember(uid, phone, 3).then(() => {
+            this.showToast('取消成功')
+          })
+        })
       }
     }
   }
 </script>
 
 <style>
-  .table-header-fixed {
-    width:100%;
-    position:fixed;
-    left:0;
-    top:0;
-    z-index:100;
-  }
+
 </style>
