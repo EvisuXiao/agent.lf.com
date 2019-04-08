@@ -19,15 +19,18 @@
       </div>
     </view-box>
     <!--搜索框-->
-    <x-dialog v-model="showDialog" hide-on-blur class="dialog-demo" @on-hide="$emit('search-hide')">
-      <slot name="search"></slot>
-    </x-dialog>
+    <div v-transfer-dom>
+      <x-dialog v-model="showDialog" hide-on-blur class="dialog-demo" :mask-z-index="500" @on-hide="$emit('search-hide')">
+        <slot name="search"></slot>
+      </x-dialog>
+    </div>
   </div>
 </template>
 
 <script>
   import {
     Icon,
+    TransferDomDirective as TransferDom,
     ViewBox,
     XDialog,
     XHeader
@@ -35,6 +38,9 @@
 
   export default {
     name: 'Layout',
+    directives: {
+      TransferDom
+    },
     components: {
       Icon,
       ViewBox,

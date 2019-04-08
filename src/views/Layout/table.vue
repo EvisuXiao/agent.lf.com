@@ -1,96 +1,131 @@
 <template>
-  <layout :title="title" :show-icon="true">
-    <scroll
-      ref="scroll"
-      :auto-update="true"
-      class="content"
-      @pullingDown="loadRefresh"
-      @pullingUp="loadMore">
-      <ul>
-        <li v-for="(item, index) in list" :key="index">{{ item }}</li>
-      </ul>
-    </scroll>
+  <layout :title="title" :show-icon="showIcon" @search-hide="$emit('search-hide')">
+    <div slot="header" ref="header"><slot name="header"></slot></div>
+    <div class="position-box" :style="{ top: headerHeight + 'px', bottom: bottomHeight + 'px' }">
+      <vue-better-scroll
+        ref="scroll"
+        class="wrapper"
+        :pullDownRefresh="pullDownCfg"
+        :pullUpLoad="pullUpCfg"
+        :startY="parseInt(headerHeight)"
+        @pullingDown="onPullingDown"
+        @pullingUp="onPullingUp">
+        <slot></slot>
+      </vue-better-scroll>
+    </div>
+    <div slot="bottom" ref="footer"><slot name="bottom"></slot></div>
+    <slot slot="search" name="search"></slot>
   </layout>
-  <loading v-model="showloading" :text="textloading"></loading>
 </template>
 
 <script>
   import Layout from './index'
-  import Scroll from 'vue-slim-better-scroll'
+  import VueBetterScroll from 'vue2-better-scroll'
   import {
     Loading
   } from 'vux'
 
   export default {
-    name: 'TableLayout',
+    name: 'LayoutTable',
     components: {
       Layout,
-      Scroll,
+      VueBetterScroll,
       Loading
     },
     props: {
       title: {
         type: String,
         default: ''
+      },
+      showIcon: {
+        type: Boolean,
+        default: false
+      },
+      getData: {
+        type: Function,
+        default: null
       }
     },
     data () {
       return {
         list: [],
         page: 1,
-        pageSize: 20
+        pageSize: 20,
+        pullDownCfg: true,
+        pullUpCfg: true,
+        headerHeight: '',
+        bottomHeight: ''
       }
     },
     mounted () {
-      // 第一次加载
-      this.getNewsList(true);
       this.$nextTick(() => {
-        this.$refs.scroller.reset()
-      })
+        this.headerHeight = this.$refs.header.offsetHeight + 46;
+        this.bottomHeight = this.$refs.footer.offsetHeight;
+      });
+      this.$refs.scroll.initScroll();
+      this.onPullingDown()
     },
-    methods: {
-      // 滚动到顶部
-      scrollToTop () {
-        this.$refs.scroll.scrollToTop()
-      },
-      // 滚动到底部
-      scrollToBottom () {
-        this.$refs.scroll.scrollToBottom()
-      },
-      fetchData (first = false) {
-        if (first) {
-          this.list = [];
-          this.page = 1
-        } else {
-          this.page++;
-          this.list = this.list.push([])
-        }
-      },
-      loadRefresh () {
-        this.fetchData(true);
-        this.page = 1
+    computed: {
+      needRefresh: function () {
+        return this.$store.getters.listRefresh
       }
     },
-    activated () {
-      this.$refs.scroller.reset()
+    watch: {
+      needRefresh: function (val) {
+        if (val) {
+          this.$refs.scroll.scrollTo(0, 0, 50);
+          this.onPullingDown();
+          this.$store.commit('setListRefresh', false)
+        }
+      }
+    },
+    methods: {
+      onPullingDown () {
+        this.getData(1, this.pageSize).then((data) => {
+          let list = data;
+          if (list === undefined) {
+            list = []
+          }
+          this.list = list;
+          this.page = 1;
+          this.$refs.scroll.refresh();
+          this.$refs.scroll.forceUpdate(this.list.length >= this.pageSize);
+          this.$store.commit('setListTmp', this.list);
+        })
+      },
+      onPullingUp () {
+        this.getData(this.page + 1, this.pageSize).then((data) => {
+          this.list = this.list.concat(data);
+          this.$refs.scroll.refresh();
+          // 最后一页
+          if (data.length < this.pageSize) {
+            this.$refs.scroll.forceUpdate(false)
+          } else {
+            this.$refs.scroll.forceUpdate(true);
+            this.page++
+          }
+          this.$store.commit('setListTmp', this.list);
+        })
+      }
+    },
+    beforeDestroy () {
+      this.$refs.scroll.destroy();
+      this.$refs.scroll = null
     }
   }
 </script>
 
-<style scoped lang="less">
-  @import '../../../node_modules/vux/src/styles/1px.less';
-
-  .layout-header {
-    width:100%;
-    position:fixed;
-    left:0;
-    top:0;
-    z-index:100;
+<style>
+  .position-box {
+    position: fixed;
+    left: 0;
+    right: 0;
+    overflow: hidden;
   }
-
-  html, body {
-    height: 100%;
-    width: 100%;
-    overflow-x: hidden;
+  .wrapper {
+    position: absolute;
+    left: 0;
+    right: 0;
+    overflow: hidden;
   }
 </style>

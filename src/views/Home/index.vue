@@ -3,7 +3,7 @@
     <card>
       <div slot="header">
         <cell is-link link="/user" value="信息设置">
-          <img slot="icon" width="90" :src="user.avatar" alt="头像">
+          <img slot="icon" width="90" :src="require('../../assets/avatar_boy.png')" alt="头像">
           <div slot="title">{{ uInfo.name }}<br/>ID: {{ uInfo.mid }}</div>
         </cell>
       </div>
@@ -25,12 +25,12 @@
     </card>
     <!--返利模式-->
     <group v-if="rebateMode">
-      <cell title="我的收益" is-link>
+      <cell title="我的收益" is-link link="/fund/income">
         <div slot>今日收益<span style="color: red; ">{{ uInfo.todayRebate }}</span>元</div>
       </cell>
       <cell title="我的代理" is-link link="/team"></cell>
       <cell title="钻石充值" is-link link="/diamond/charge"></cell>
-      <cell title="我的账单" is-link link="/fund"></cell>
+      <cell title="我的账单" is-link link="/diamond/change"></cell>
       <cell title="资金记录" is-link link="/fund"></cell>
       <cell title="消息中心" is-link link="/notice"></cell>
       <cell title="帮助中心" is-link link="/help"></cell>
@@ -58,9 +58,8 @@
     Card,
     XButton
   } from 'vux'
-  import Avatar from '../../assets/vux_logo.png'
-  import { logout } from '../../api'
-  import { isRebateMode } from '../../utils'
+  import { logout, getNotice } from '../../api'
+  import { isRebateMode, milli2Datetime } from '../../utils'
 
   export default {
     components: {
@@ -68,13 +67,6 @@
       Cell,
       Card,
       XButton
-    },
-    data () {
-      return {
-        user: {
-          avatar: Avatar
-        }
-      }
     },
     computed: {
       uInfo: function () {
@@ -84,7 +76,19 @@
         return isRebateMode()
       }
     },
+    created () {
+      this.notice()
+    },
     methods: {
+      notice () {
+        const login = this.$store.getters.userInfo.loginTime;
+        const lastLogin = this.$store.getters.userInfo.lastLoginTime;
+        if (milli2Datetime(login, 'YYYY-MM-DD') !== milli2Datetime(lastLogin, 'YYYY-MM-DD')) {
+          getNotice().then((data) => {
+            this.showAlert(data, '公告')
+          })
+        }
+      },
       logout () {
         logout().then(() => {
           this.showToast('退出成功');

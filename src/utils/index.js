@@ -13,6 +13,10 @@ export function clearSessionId () {
   })
 }
 
+export function needRefreshList () {
+  store.commit('setListRefresh', true)
+}
+
 export function milli2Datetime (ms, fmt = 'YYYY-MM-DD HH:mm:ss') {
   return dateFormat(new Date(ms), fmt)
 }

@@ -1,96 +1,77 @@
 <template>
-  <layout title="我的代理" :show-icon="true" @search-hide="fetchData(true)">
+  <layout-table title="我的代理" show-icon :getData="fetchData" @search-hide="refresh">
     <tab slot="header">
       <tab-item v-for="(value, key) in tabLabel" :key="key" :selected="parseInt(key) === 0" @on-item-click="onItemClick(key)">{{ value }}</tab-item>
     </tab>
     <div>
-      <scroller
-        ref="scroller"
-        v-model="pullStatus"
-        lock-x
-        scrollbar-y
-        use-pullup
-        use-pulldown
-        @on-pullup-loading="fetchData(false)"
-        @on-pulldown-loading="fetchData(true)" >
-        <div>
-          <group v-if="list.length" :gutter="0">
-            <x-table :cell-bordered="false">
-              <thead>
-              <tr>
-                <th>用户名/ID</th>
-                <th>钻石剩余</th>
-                <th>代理等级</th>
-                <th v-if="rebateMode">累计返利</th>
-                <th v-else>推荐时间</th>
-              </tr>
-              </thead>
-              <tbody>
-              <tr v-for="item in list" @click="showDetail(item.mid)">
-                <td>{{ item.name }}<br/>ID: {{ item.mid }}</td>
-                <td>{{ item.money }}</td>
-                <td>{{ levelName(item.level) }}</td>
-                <td v-if="rebateMode">{{ item.rebate }}</td>
-                <td v-else>{{ milli2Datetime(item.recTime, 'YYYY-MM-DD') }}<br />{{ milli2Datetime(item.recTime, 'HH:mm:ss') }}</td>
-              </tr>
-              </tbody>
-            </x-table>
-          </group>
-        </div>
-        <div slot="pullup" class="xs-plugin-pullup-container xs-plugin-pullup-up" style="position: absolute; width: 100%; height: 40px; bottom: -40px; text-align: center;">
-          <load-more v-if="pullStatus.pullupStatus !== 'disabled' && pullStatus.pullupStatus !== 'default'" tip="加载中"></load-more>
-        </div>
-        <div slot="pulldown" class="xs-plugin-pulldown-container xs-plugin-pulldown-down" style="position: absolute; width: 100%; height: 60px; line-height: 60px; top: -60px; text-align: center;">
-          <load-more v-if="pullStatus.pulldownStatus !== 'default'" tip="正在刷新"></load-more>
-        </div>
-      </scroller>
-      <load-more v-if="pullStatus.pullupStatus === 'disabled'" :show-loading="false" tip="没有更多数据"></load-more>
+      <group :gutter="0">
+        <x-table :cell-bordered="false">
+          <thead>
+          <tr>
+            <th>用户名/ID</th>
+            <th>钻石剩余</th>
+            <th>代理等级</th>
+            <th v-if="rebateMode">累计返利</th>
+            <th v-else>推荐时间</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr v-for="item in list" @click="showDetail(item.mid)">
+            <td>{{ item.name }}<br/>ID: {{ item.mid }}</td>
+            <td>{{ item.money }}</td>
+            <td>{{ levelName(item.level) }}</td>
+            <td v-if="rebateMode">{{ item.rebate }}</td>
+            <td v-else>{{ milli2Datetime(item.recTime, 'YYYY-MM-DD') }}<br />{{ milli2Datetime(item.recTime, 'HH:mm:ss') }}</td>
+          </tr>
+          </tbody>
+        </x-table>
+      </group>
     </div>
     <group slot="bottom" :gutter="0">
       <cell>
         <div slot="title">总人数: {{ total }}</div>
-        <!--<div slot>-->
-        <!--<x-button type="primary" link="/team/add">添加代理</x-button>-->
-        <!--</div>-->
       </cell>
     </group>
     <group slot="search" :gutter="0">
       <x-input title="ID" text-align="right" v-model="searchMid"></x-input>
     </group>
-  </layout>
+  </layout-table>
 </template>
 
 <script>
-  import Layout from '../Layout'
-  import { Tab, TabItem, XTable, Cell, XDialog, XButton, XInput, Group, Scroller, LoadMore } from 'vux'
-  import { milli2Datetime, levelTab, isRebateMode, levelName } from '../../utils'
+  import LayoutTable from '../Layout/table'
+  import {
+    Cell,
+    Group,
+    Tab,
+    TabItem,
+    XInput,
+    XTable
+  } from 'vux'
+  import { milli2Datetime, levelTab, isRebateMode, needRefreshList, levelName } from '../../utils'
   import { getMemberList } from '../../api'
 
   export default {
     components: {
-      Layout, Tab, TabItem, XTable, Cell, XDialog, XButton, XInput, Group, Scroller, LoadMore
+      LayoutTable,
+      Cell,
+      Group,
+      Tab,
+      TabItem,
+      XInput,
+      XTable
     },
     data () {
       return {
-        list: [],
-        page: 1,
-        pageSize: 20,
-        pullStatus: {
-          pullupStatus: 'default',
-          pulldownStatus: 'default'
-        },
         curTab: 0,
         total: 0,
         searchMid: 0
       }
     },
-    mounted () {
-      this.fetchData(true);
-      this.$nextTick(() => {
-        this.$refs.scroller.reset()
-      })
-    },
     computed: {
+      list: function () {
+        return this.$store.getters.listTmp
+      },
       tabLabel: function () {
         return levelTab()
       },
@@ -99,33 +80,20 @@
       }
     },
     methods: {
-      fetchData (first = false) {
-        getMemberList(first ? 1 : this.page + 1, this.pageSize, this.searchMid, this.curTab).then(response => {
-          const newList = response.info;
-          if (first) {
-            this.list = newList;
-            this.page = 1;
-            this.$refs.scroller.donePulldown();
-            this.$refs.scroller.enablePullup()
-          } else {
-            this.list = this.list.concat(newList);
-            this.$refs.scroller.donePullup();
-            this.$nextTick(() => {
-              this.$refs.scroller.reset()
-            });
-            // 最后一页
-            if (newList.length < this.pageSize) {
-              this.$refs.scroller.disablePullup()
-            } else {
-              this.page++
-            }
-          }
-          this.total = response.count;
+      fetchData (page, pageSize) {
+        return new Promise(resolve => {
+          getMemberList(page, pageSize, this.searchMid, this.curTab).then(response => {
+            this.total = response.count;
+            resolve(response.info)
+          })
         })
+      },
+      refresh () {
+        needRefreshList()
       },
       onItemClick (index) {
         this.curTab = index;
-        this.fetchData(true)
+        this.refresh()
       },
       milli2Datetime (ms, fmt = 'YYYY-MM-DD HH:mm:ss') {
         return milli2Datetime(ms, fmt)
@@ -141,11 +109,5 @@
 </script>
 
 <style>
-  .table-header-fixed {
-    width:100%;
-    position:fixed;
-    left:0;
-    top:0;
-    z-index:100;
-  }
+
 </style>

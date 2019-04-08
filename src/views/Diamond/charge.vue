@@ -15,6 +15,7 @@
         </group>
       </group>
       <group>
+        <cell title="可用余额"><span>￥{{ balance }}</span></cell>
         <cell title="商品金额"><span>￥{{ priceSelected }}</span></cell>
       </group>
     </div>
@@ -88,9 +89,6 @@
       }
     },
     computed: {
-      switchText: function () {
-        return '共' + this.balance + '元可直接抵用' + this.priceSelected + '元'
-      },
       balance: function () {
         return this.$store.getters.userInfo.money
       }
@@ -114,7 +112,7 @@
         })
       },
       submit () {
-        this.showConfirm('确定支付' + this.priceSelected + '元', function () {
+        this.showConfirm('确定支付' + this.priceSelected + '元', () => {
           chargeMoney(this.priceMap[this.priceSelected], this.priceSelected, this.waySelected)
         })
       }

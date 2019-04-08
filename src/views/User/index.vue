@@ -8,7 +8,7 @@
         <span>{{ info.rebate }}%</span>
       </cell>
       <cell title="手机号码" is-link link="/user/mobile">{{ info.phone }}</cell>
-      <cell title="我的邀请人">{{ info.name }}</cell>
+      <cell title="我的邀请人">{{ info.recName }}</cell>
     </group>
     <group>
       <cell title="修改密码" is-link link="/user/password"></cell>

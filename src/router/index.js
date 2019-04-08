@@ -22,6 +22,7 @@ import DiamondSell from '../views/Diamond/sell'
 import DiamondChange from '../views/Diamond/change'
 import DiamondChangeDetail from '../views/Diamond/changeDetail'
 import Fund from '../views/Fund'
+import FundIncome from '../views/Fund/income'
 import FundDetail from '../views/Fund/detail'
 import Notice from '../views/Notice'
 import Help from '../views/Help'
@@ -144,6 +145,11 @@ export default new Router({
       path: '/fund/detail',
       name: 'FundDetail',
       component: FundDetail
+    },
+    {
+      path: '/fund/income',
+      name: 'FundIncome',
+      component: FundIncome
     },
     {
       path: '/notice',

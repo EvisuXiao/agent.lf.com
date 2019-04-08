@@ -45,17 +45,9 @@ export function logout () {
   })
 }
 
-export function getMemberInfo (mid = 0) {
-  return promise(Config.MyInfo,
-    mid ? { mid: intVal(mid) } : {},
-    'info',
-    mid !== 0
-  )
-}
-
 export async function storeMyInfo () {
   if (!store.getters.userInfo.mid) {
-    await getMemberInfo().then(data => {
+    await promise(Config.MyInfo, {}, 'info', false).then(data => {
       store.commit('setInfo', data);
     })
   }
@@ -115,6 +107,12 @@ export function getMemberList (page = 1, limit = PAGE_SIZE, mid = 0, level = 0) 
   return promise(Config.MemberList, params)
 }
 
+export function getMemberInfo (mid) {
+  return promise(Config.MemberInfo, {
+    mid: intVal(mid)
+  }, 'info')
+}
+
 export function getUserInfo (uid) {
   return promise(Config.UserInfo, {
     uid: intVal(uid)
@@ -130,7 +128,15 @@ export function chargeDiamond (uid, num, rmb = 0, note = '') {
   }, 'money')
 }
 
-export function getDiamondChangeList (mid = 0, type = 0, page = 1, limit = PAGE_SIZE, stime = 0, etime = 0) {
+export function getDiamondChangeList (mid = 0, type = 0, page = 1, limit = PAGE_SIZE, start = '', end = '') {
+  let stime = 0;
+  let etime = 0;
+  if (start) {
+    stime = (new Date(start)).getTime()
+  }
+  if (end) {
+    etime = (new Date(end)).getTime()
+  }
   return promise(Config.DiamondChange, {
     mid: intVal(mid),
     type: intVal(type),
@@ -168,11 +174,15 @@ export function optBankCard (name, bankName, cardNum, type = 1, index = 0) {
   })
 }
 
-export function getApplyList (page = 1, limit = PAGE_SIZE) {
-  return promise(Config.ApplyList, {
+export function getApplyList (page = 1, limit = PAGE_SIZE, stat = 0) {
+  let params = {
     page: intVal(page),
     limit: intVal(limit)
-  })
+  };
+  if (stat) {
+    params.stat = intVal(stat) - 1
+  }
+  return promise(Config.ApplyList, params)
 }
 
 export function applyMember (uid, phone, stat = 0) {
@@ -184,4 +194,52 @@ export function applyMember (uid, phone, stat = 0) {
     params.phone = intVal(phone)
   }
   return promise(Config.MyApply, params)
+}
+
+export function getRebateList (page = 1, limit = PAGE_SIZE, mid = 0, mType = 0, type = '', start = '', end = '') {
+  let stime = 0;
+  let etime = 0;
+  if (start) {
+    stime = (new Date(start)).getTime()
+  }
+  if (end) {
+    etime = (new Date(end)).getTime()
+  }
+  let params = {
+    page: intVal(page),
+    limit: intVal(limit),
+    stime: intVal(stime),
+    etime: intVal(etime)
+  };
+  if (mid) {
+    params.mid = intVal(mid);
+    params.mType = intVal(mType);
+  }
+  if (type) {
+    params.type = type
+  }
+  return promise(Config.RebateList, params)
+}
+
+export function getRebateMemberStat (mid) {
+  return promise(Config.RebateMemberStat, {
+    mid: intVal(mid)
+  }, 'info')
+}
+
+export function getRebateStat (page = 1, limit = PAGE_SIZE, start = '', end = '') {
+  let stime = 0;
+  let etime = 0;
+  if (start) {
+    stime = (new Date(start)).getTime()
+  }
+  if (end) {
+    etime = (new Date(end)).getTime()
+  }
+  return promise(Config.RebateStat, {
+    page: intVal(page),
+    limit: intVal(limit),
+    stime: intVal(stime),
+    etime: intVal(etime)
+  })
 }
