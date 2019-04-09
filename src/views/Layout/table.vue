@@ -79,7 +79,7 @@
     },
     methods: {
       onPullingDown () {
-        this.getData(1, this.pageSize).then((data) => {
+        this.getData(1, this.pageSize).then(data => {
           let list = data;
           if (list === undefined) {
             list = []
@@ -94,7 +94,7 @@
         })
       },
       onPullingUp () {
-        this.getData(this.page + 1, this.pageSize).then((data) => {
+        this.getData(this.page + 1, this.pageSize).then(data => {
           let list = data;
           if (list === undefined) {
             list = []

@@ -37,7 +37,7 @@
         <datetime title="结束时间" format="YYYY-MM-DD HH:mm" v-model="endTime"></datetime>
       </div>
       <div v-else>
-        <popup-picker title="区间" :data="timeTypeList" v-model="timeType"></popup-picker>
+        <popup-picker title="区间" show-name :data="timeTypeList" v-model="timeType"></popup-picker>
         <!--<datetime title="开始时间" format="YYYY-MM-DD HH:mm" :readonly="timeType[0] !== '自定义'" v-model="startTime"></datetime>-->
         <!--<datetime title="结束时间" format="YYYY-MM-DD HH:mm" :readonly="timeType[0] !== '自定义'" v-model="endTime"></datetime>-->
       </div>
@@ -48,7 +48,6 @@
 <script>
   import LayoutTable from '../Layout/table'
   import {
-    dateFormat,
     Datetime,
     Group,
     PopupPicker,
@@ -57,7 +56,7 @@
     XInput,
     XTable
   } from 'vux'
-  import { milli2Datetime, needRefreshList, levelName } from '../../utils'
+  import { milli2Datetime, needRefreshList, levelName, timePeriod } from '../../utils'
   import { getRebateList, getRebateStat } from '../../api'
 
   export default {
@@ -76,13 +75,25 @@
         curTab: 0,
         startTime: '',
         endTime: '',
-        timeType: ['全部'],
+        timeType: ['0'],
         timeTypeList: [
           [
-            '全部',
-            '今日',
-            '本周',
-            '本月'
+            {
+              name: '全部',
+              value: '0'
+            },
+            {
+              name: '今日',
+              value: '1'
+            },
+            {
+              name: '本周',
+              value: '2'
+            },
+            {
+              name: '本月',
+              value: '3'
+            }
           ]
         ]
       }
@@ -94,37 +105,9 @@
     },
     watch: {
       timeType: function (val) {
-        const date = new Date();
-        switch (val[0]) {
-          case '全部': {
-            this.startTime = '';
-            this.endTime = '';
-            break;
-          }
-          case '今日': {
-            this.startTime = dateFormat(date, 'YYYY-MM-DD 00:00:00');
-            this.endTime = dateFormat(date, 'YYYY-MM-DD 00:00:00');
-            break;
-          }
-          case '本周': {
-            let num = date.getDay();
-            if (num === 0) {
-              num = 7
-            }
-            date.setDate(date.getDate() - num + 1);
-            this.startTime = dateFormat(date, 'YYYY-MM-DD 00:00:00');
-            date.setDate(date.getDate() + 6);
-            this.endTime = dateFormat(date, 'YYYY-MM-DD 00:00:00');
-            break;
-          }
-          case '本月': {
-            date.setDate(1);
-            this.startTime = dateFormat(date, 'YYYY-MM-DD 00:00:00');
-            date.setMonth(date.getMonth() + 1);
-            date.setDate(date.getDate() - 1);
-            this.endTime = dateFormat(date, 'YYYY-MM-DD 00:00:00');
-          }
-        }
+        const time = timePeriod(val[0]);
+        this.startTime = time[0];
+        this.endTime = time[1]
       }
     },
     methods: {
@@ -168,7 +151,7 @@
         if (this.curTab === 0) {
           this.$router.push({ path: '/fund/detail' })
         } else {
-          this.$router.push({ path: '/fund/statDetail' })
+          this.$router.push({ path: '/fund/rebate', query: { mid: row.uid, timeType: this.timeType[0] } })
         }
       },
       formatList (row, user) {

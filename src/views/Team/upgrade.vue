@@ -67,7 +67,7 @@
           }
         }
         if (this.$route.query.mid) {
-          getMemberInfo(this.$route.query.mid).then((data) => {
+          getMemberInfo(this.$route.query.mid).then(data => {
             this.user = data;
             this.uid = data.mid;
             this.isUpgrade = true;

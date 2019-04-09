@@ -43,6 +43,44 @@ export function isRebateMode () {
   return store.getters.userInfo.sysMode === 2
 }
 
+export function timePeriod (type) {
+  const date = new Date();
+  let startTime = '';
+  let endTime = '';
+  switch (type) {
+    case '0': {
+      startTime = '';
+      endTime = '';
+      break
+    }
+    case '1': {
+      startTime = dateFormat(date, 'YYYY-MM-DD 00:00:00');
+      endTime = dateFormat(date, 'YYYY-MM-DD 00:00:00');
+      break
+    }
+    case '2': {
+      let num = date.getDay();
+      if (num === 0) {
+        num = 7
+      }
+      date.setDate(date.getDate() - num + 1);
+      startTime = dateFormat(date, 'YYYY-MM-DD 00:00:00');
+      date.setDate(date.getDate() + 6);
+      endTime = dateFormat(date, 'YYYY-MM-DD 00:00:00');
+      break
+    }
+    case '3': {
+      date.setDate(1);
+      startTime = dateFormat(date, 'YYYY-MM-DD 00:00:00');
+      date.setMonth(date.getMonth() + 1);
+      date.setDate(date.getDate() - 1);
+      endTime = dateFormat(date, 'YYYY-MM-DD 00:00:00');
+      break
+    }
+  }
+  return [startTime, endTime]
+}
+
 export function levelName (level) {
   const levels = {
     1: '代理',

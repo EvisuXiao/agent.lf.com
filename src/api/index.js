@@ -222,9 +222,19 @@ export function getRebateList (page = 1, limit = PAGE_SIZE, mid = 0, mType = 0, 
   return promise(Config.RebateList, params)
 }
 
-export function getRebateMemberStat (mid) {
+export function getRebateMemberStat (mid, start = '', end = '') {
+  let stime = 0;
+  let etime = 0;
+  if (start) {
+    stime = (new Date(start)).getTime()
+  }
+  if (end) {
+    etime = (new Date(end)).getTime()
+  }
   return promise(Config.RebateMemberStat, {
-    mid: intVal(mid)
+    mid: intVal(mid),
+    stime: intVal(stime),
+    etime: intVal(etime)
   }, 'info')
 }
 

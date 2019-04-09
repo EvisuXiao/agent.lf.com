@@ -91,7 +91,7 @@
         const login = this.$store.getters.userInfo.loginTime;
         const lastLogin = this.$store.getters.userInfo.lastLoginTime;
         if (milli2Datetime(login, 'YYYY-MM-DD') !== milli2Datetime(lastLogin, 'YYYY-MM-DD')) {
-          getNotice().then((data) => {
+          getNotice().then(data => {
             this.showAlert(data, '公告')
           })
         }

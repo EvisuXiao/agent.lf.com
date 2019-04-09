@@ -52,7 +52,7 @@
     },
     methods: {
       fetchData () {
-        getBankCard().then((data) => {
+        getBankCard().then(data => {
           this.list = data
         })
       },

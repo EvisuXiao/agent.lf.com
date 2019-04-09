@@ -12,16 +12,16 @@
       </group>
       <group v-if="rebateMode">
         <cell title="累计充值">{{ info.rmbAll }}</cell>
-        <cell title="累计返利" is-link :link="{ path: '/team/rebate', query: { mid: info.mid } }">{{ info.rebate }}</cell>
+        <cell title="累计返利" is-link :link="{ path: '/fund/rebate', query: { mid: info.mid, timeType: '0' } }">{{ info.rebate }}</cell>
         <cell title="返利比例">{{ info.rate }}</cell>
       </group>
       <group v-else>
         <cell title="昨日茶楼场次">{{ info.gameCount }}</cell>
         <cell title="昨日茶楼消耗">{{ info.gameCost }}</cell>
       </group>
-      <group v-if="info.zdCount || info.dlCount" title="他的代理">
-        <cell v-if="info.zdCount" title="直属总代理" is-link>{{ info.zdCount }}</cell>
-        <cell v-if="info.dlCount" title="直属代理" is-link>{{ info.dlCount }}</cell>
+      <group title="他的代理">
+        <cell v-if="info.zdCount" title="直属总代理">{{ info.zdCount }}</cell>
+        <cell title="直属代理">{{ info.dlCount }}</cell>
       </group>
       <div v-if="!rebateMode">
         <group>
@@ -71,7 +71,7 @@
       },
       fetchData () {
         if (this.$route.query.mid) {
-          getMemberInfo(this.$route.query.mid).then((data) => {
+          getMemberInfo(this.$route.query.mid).then(data => {
             this.info = data
           })
         }

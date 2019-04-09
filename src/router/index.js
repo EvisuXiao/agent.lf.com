@@ -16,7 +16,6 @@ import TeamDetail from '../views/Team/detail'
 import TeamAdd from '../views/Team/add'
 import TeamApply from '../views/Team/apply'
 import TeamUpgrade from '../views/Team/upgrade'
-import TeamRebate from '../views/Team/rebate'
 import Diamond from '../views/Diamond'
 import DiamondDetail from '../views/Diamond/detail'
 import DiamondCharge from '../views/Diamond/charge'
@@ -24,7 +23,7 @@ import DiamondSell from '../views/Diamond/sell'
 import Fund from '../views/Fund'
 import FundIncome from '../views/Fund/income'
 import FundDetail from '../views/Fund/detail'
-import FundStatDetail from '../views/Fund/statDetail'
+import FundRebate from '../views/Fund/rebate'
 import Notice from '../views/Notice'
 import Help from '../views/Help'
 
@@ -108,11 +107,6 @@ export default new Router({
       component: TeamUpgrade
     },
     {
-      path: '/team/rebate',
-      name: 'TeamRebate',
-      component: TeamRebate
-    },
-    {
       path: '/team/apply',
       name: 'TeamApply',
       component: TeamApply
@@ -148,9 +142,9 @@ export default new Router({
       component: FundDetail
     },
     {
-      path: '/fund/statDetail',
-      name: 'FundStatDetail',
-      component: FundStatDetail
+      path: '/fund/rebate',
+      name: 'FundRebate',
+      component: FundRebate
     },
     {
       path: '/fund/income',

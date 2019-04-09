@@ -15,7 +15,7 @@
         </group>
       </group>
       <group>
-        <cell title="可用余额"><span>￥{{ balance }}</span></cell>
+        <cell v-if="rebateMode" title="可用余额"><span>￥{{ balance }}</span></cell>
         <cell title="商品金额"><span>￥{{ priceSelected }}</span></cell>
       </group>
     </div>
@@ -34,70 +34,63 @@
   import AiBeiPng from '../../assets/aibei_pay.jpg'
   import Layout from '../Layout'
   import {
-    XHeader,
     Cell,
-    Checker,
-    CheckerItem,
-    Checklist,
     Group,
-    Grid,
-    GridItem,
+    PopupRadio,
     Radio,
-    XButton,
-    Flexbox,
-    FlexboxItem,
-    PopupRadio
+    XButton
   } from 'vux'
   import { getPayCfg, chargeMoney } from '../../api'
-  import { sortArrObj } from '../../utils'
+  import { sortArrObj, isRebateMode } from '../../utils'
 
   export default {
     components: {
       Layout,
-      XHeader,
       Cell,
-      Checker,
-      CheckerItem,
-      Checklist,
       Group,
-      Grid,
-      GridItem,
+      PopupRadio,
       Radio,
-      XButton,
-      Flexbox,
-      FlexboxItem,
-      PopupRadio
+      XButton
     },
     data () {
       return {
         price: [],
         priceMap: {},
         priceSelected: 0,
-        chargeWays: [
-          {
-            icon: BalancePng,
-            key: 'rebate',
-            value: '余额支付'
-          },
-          {
-            icon: AiBeiPng,
-            key: 'aiBei',
-            value: '爱贝支付'
-          }
-        ],
-        waySelected: 'rebate'
+        waySelected: ''
       }
     },
     computed: {
       balance: function () {
         return this.$store.getters.userInfo.money
+      },
+      rebateMode: function () {
+        return isRebateMode()
+      },
+      chargeWays: function () {
+        return isRebateMode()
+        ? [{
+          icon: BalancePng,
+          key: 'rebate',
+          value: '余额支付'
+        },
+        {
+          icon: AiBeiPng,
+          key: 'aiBei',
+          value: '爱贝支付'
+        }]
+        : [{
+          icon: AiBeiPng,
+          key: 'aiBei',
+          value: '爱贝支付'
+        }]
       }
     },
     created () {
-      this.getPayCfg();
+      this.init();
     },
     methods: {
-      getPayCfg () {
+      init () {
         getPayCfg().then(data => {
           if (data) {
             this.price = [];
@@ -109,6 +102,9 @@
             sortArrObj(this.price, 'key');
             this.priceSelected = this.price[0].key
           }
+          this.$nextTick(() => {
+            this.waySelected = this.chargeWays[0].key
+          })
         })
       },
       submit () {
