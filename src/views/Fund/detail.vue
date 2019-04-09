@@ -6,7 +6,7 @@
         <cell title="等级">{{ info.mLevel }}</cell>
       </group>
       <group title="返利">
-        <cell title="提供方">{{ info.fromName }}(ID:{{ info.fromid }})</cell>
+        <cell title="提供方">{{ info.fromName }}(ID:{{ info.fromId }})</cell>
         <cell title="提供方等级">{{ info.fromLevel }}</cell>
         <cell title="类型">{{ info.type }}</cell>
         <cell title="金额">{{ info.rmb }}</cell>

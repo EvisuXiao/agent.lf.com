@@ -4,7 +4,7 @@
       <group>
         <cell title="返利人">{{ info.name }}(ID:{{ info.uid }})</cell>
         <cell title="充值">{{ info.rmb }}</cell>
-        <cell title="返利">{{ info.rmb }}</cell>
+        <cell title="返利">{{ info.rebate }}</cell>
       </group>
     </div>
   </layout>

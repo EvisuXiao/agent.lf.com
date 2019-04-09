@@ -16,7 +16,7 @@
           </thead>
           <tbody v-if="curTab === 0">
             <tr v-for="item in list" @click="showDetail(item)">
-              <td>{{ item.name }}(ID: {{ item.mid }})<br />{{ milli2Datetime(item.time) }}</td>
+              <td>{{ item.fromName }}(ID: {{ item.fromId }})<br />{{ milli2Datetime(item.time) }}</td>
               <td>{{ item.rmb }}</td>
               <td>{{ item.rebate }}</td>
             </tr>
