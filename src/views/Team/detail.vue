@@ -2,39 +2,55 @@
   <layout title="代理详情">
     <div>
       <group>
-        <cell title="用户名">{{ info.name }}</cell>
         <cell title="ID">{{ info.mid }}</cell>
+        <cell title="用户名">{{ info.name }}</cell>
         <cell title="剩余钻石">{{ info.money }}</cell>
-        <!--<cell title="累计消耗" is-link>{{ info.name }}</cell>-->
-        <!--<cell title="累计返利" is-link>{{ info.name }}</cell>-->
-        <cell title="角色" is-link>{{ levelName(info.level) }}</cell>
         <cell title="手机号码">{{ info.phone }}</cell>
         <cell title="加入时间">{{ info.dlTime }}</cell>
-        <!--<cell title="状态">{{ info.name }}</cell>-->
+        <cell v-if="rebateMode" title="等级" is-link :link="{ path: '/team/upgrade', query: { mid: info.mid } }">{{ levelName(info.level) }}</cell>
+        <cell v-else title="等级">{{ levelName(info.level) }}</cell>
+      </group>
+      <group v-if="rebateMode">
+        <cell title="累计充值">{{ info.rmbAll }}</cell>
+        <cell title="累计返利" is-link :link="{ path: '/team/rebate', query: { mid: info.mid } }">{{ info.rebate }}</cell>
+        <cell title="返利比例">{{ info.rate }}</cell>
+      </group>
+      <group v-else>
+        <cell title="昨日茶楼场次">{{ info.gameCount }}</cell>
+        <cell title="昨日茶楼消耗">{{ info.gameCost }}</cell>
       </group>
       <group v-if="info.zdCount || info.dlCount" title="他的代理">
         <cell v-if="info.zdCount" title="直属总代理" is-link>{{ info.zdCount }}</cell>
         <cell v-if="info.dlCount" title="直属代理" is-link>{{ info.dlCount }}</cell>
       </group>
-      <group>
-        <x-button type="primary" style="border-radius:99px;" @click.native="sellDetail">销售明细</x-button>
-      </group>
-      <group>
-        <x-button type="primary" style="border-radius:99px;" @click.native="sellDiamond">出售钻石</x-button>
-      </group>
+      <div v-if="!rebateMode">
+        <group>
+          <x-button class="button-circle" type="primary" @click.native="sellDetail">销售明细</x-button>
+        </group>
+        <group>
+          <x-button class="button-circle" type="primary" @click.native="sellDiamond">出售钻石</x-button>
+        </group>
+      </div>
     </div>
   </layout>
 </template>
 
 <script>
   import Layout from '../Layout'
-  import {Tab, TabItem, XTable, Cell, Icon, XDialog, XButton, XInput, Group} from 'vux'
+  import {
+    Cell,
+    Group,
+    XButton
+  } from 'vux'
   import { getMemberInfo } from '../../api'
-  import { levelName } from '../../utils'
+  import { levelName, isRebateMode } from '../../utils'
 
   export default {
     components: {
-      Layout, Tab, TabItem, XTable, Cell, Icon, XDialog, XButton, XInput, Group
+      Layout,
+      Cell,
+      Group,
+      XButton
     },
     data () {
       return {
@@ -43,6 +59,11 @@
     },
     created () {
       this.fetchData()
+    },
+    computed: {
+      rebateMode: function () {
+        return isRebateMode()
+      }
     },
     methods: {
       levelName (level) {
@@ -66,5 +87,7 @@
 </script>
 
 <style>
-
+  .button-circle {
+    border-radius: 99px;
+  }
 </style>

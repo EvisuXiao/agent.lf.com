@@ -2,32 +2,25 @@ import * as Config from './config'
 import http from '../utils/http'
 import { intVal, clearSessionId } from '../utils'
 import store from '../store'
-import app from '../main'
 
 const PAGE_SIZE = 20;
 
-export function promise (url, data = {}, field = '', loading = true) {
-  if (loading) {
-    // app.showLoading()
-  }
+export function promise (url, data = {}, field = '') {
+  store.commit('setLoading', true);
   let config = { url: url };
   if (data) {
     config.data = data
   }
   return new Promise(resolve => {
     http(config).then(response => {
-      if (loading) {
-        // app.showLoading(false)
-      }
+      store.commit('setLoading', false);
       if (field) {
         resolve(response[field])
       } else {
         resolve(response)
       }
     }).catch(() => {
-      if (loading) {
-        app.showLoading(false)
-      }
+      store.commit('setLoading', false)
     })
   }).catch(() => {})
 }
@@ -47,7 +40,7 @@ export function logout () {
 
 export async function storeMyInfo () {
   if (!store.getters.userInfo.mid) {
-    await promise(Config.MyInfo, {}, 'info', false).then(data => {
+    await promise(Config.MyInfo, {}, 'info').then(data => {
       store.commit('setInfo', data);
     })
   }
@@ -87,7 +80,7 @@ export function changePhone (phone, code) {
   }).then(() => {
     let uInfo = Object.assign({}, store.getters.userInfo);
     uInfo.phone = phone;
-    store.commit('setInfo', uInfo);
+    store.commit('setInfo', uInfo)
   })
 }
 
@@ -111,6 +104,14 @@ export function getMemberInfo (mid) {
   return promise(Config.MemberInfo, {
     mid: intVal(mid)
   }, 'info')
+}
+
+export function upgradeMember (mid, level, phone) {
+  return promise(Config.MemberUpgrade, {
+    mid: intVal(mid),
+    level: intVal(level),
+    phone: intVal(phone)
+  })
 }
 
 export function getUserInfo (uid) {
@@ -241,5 +242,16 @@ export function getRebateStat (page = 1, limit = PAGE_SIZE, start = '', end = ''
     limit: intVal(limit),
     stime: intVal(stime),
     etime: intVal(etime)
+  })
+}
+
+export function rebateWithdraw (num, index) {
+  return promise(Config.RebateWithdraw, {
+    num: intVal(num),
+    index: intVal(index)
+  }).then(response => {
+    let uInfo = Object.assign({}, store.getters.userInfo);
+    uInfo.rebate = response.rebate;
+    store.commit('setInfo', uInfo)
   })
 }

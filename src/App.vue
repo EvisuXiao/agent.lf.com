@@ -1,13 +1,25 @@
 <template>
   <div id="app" style="height:100%;">
     <router-view></router-view>
+    <loading :show="isLoading"></loading>
   </div>
 </template>
 
 <script>
-export default {
-  name: 'app'
-};
+  import store from './store'
+  import { Loading } from 'vux'
+
+  export default {
+    name: 'app',
+    components: {
+      Loading
+    },
+    computed: {
+      isLoading: function () {
+        return store.getters.loading
+      }
+    }
+  };
 </script>
 
 <style lang="less">

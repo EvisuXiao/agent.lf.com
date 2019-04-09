@@ -15,15 +15,16 @@ import Team from '../views/Team'
 import TeamDetail from '../views/Team/detail'
 import TeamAdd from '../views/Team/add'
 import TeamApply from '../views/Team/apply'
+import TeamUpgrade from '../views/Team/upgrade'
+import TeamRebate from '../views/Team/rebate'
 import Diamond from '../views/Diamond'
 import DiamondDetail from '../views/Diamond/detail'
-import DiamondCharge from '../views/Diamond/Charge'
+import DiamondCharge from '../views/Diamond/charge'
 import DiamondSell from '../views/Diamond/sell'
-import DiamondChange from '../views/Diamond/change'
-import DiamondChangeDetail from '../views/Diamond/changeDetail'
 import Fund from '../views/Fund'
 import FundIncome from '../views/Fund/income'
 import FundDetail from '../views/Fund/detail'
+import FundStatDetail from '../views/Fund/statDetail'
 import Notice from '../views/Notice'
 import Help from '../views/Help'
 
@@ -102,6 +103,16 @@ export default new Router({
       component: TeamAdd
     },
     {
+      path: '/team/upgrade',
+      name: 'TeamUpgrade',
+      component: TeamUpgrade
+    },
+    {
+      path: '/team/rebate',
+      name: 'TeamRebate',
+      component: TeamRebate
+    },
+    {
       path: '/team/apply',
       name: 'TeamApply',
       component: TeamApply
@@ -127,16 +138,6 @@ export default new Router({
       component: DiamondCharge
     },
     {
-      path: '/diamond/change',
-      name: 'DiamondChange',
-      component: DiamondChange
-    },
-    {
-      path: '/diamond/changeDetail',
-      name: 'DiamondChangeDetail',
-      component: DiamondChangeDetail
-    },
-    {
       path: '/fund',
       name: 'Fund',
       component: Fund
@@ -145,6 +146,11 @@ export default new Router({
       path: '/fund/detail',
       name: 'FundDetail',
       component: FundDetail
+    },
+    {
+      path: '/fund/statDetail',
+      name: 'FundStatDetail',
+      component: FundStatDetail
     },
     {
       path: '/fund/income',

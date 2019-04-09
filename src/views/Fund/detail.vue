@@ -1,58 +1,45 @@
 <template>
-  <div>
-    <x-header :left-options="{ backText: '' }" title="详情"></x-header>
-    <group title="订单">
-      <cell title="订单编号">{{ order.id }}</cell>
-      <cell title="名称">{{ order.name }}</cell>
-      <cell title="类型">{{ order.type }}</cell>
-      <cell title="金额">{{ order.amount }}</cell>
-      <cell title="时间">{{ order.ctime }}</cell>
-      <cell title="状态">{{ order.status }}</cell>
-    </group>
-    <group title="备注">
-      <cell title="当前余额">{{ order.balance }}</cell>
-      <cell title="备注信息">{{ order.remark }}</cell>
-    </group>
-  </div>
+  <layout title="详情">
+    <div>
+      <group title="用户">
+        <cell title="用户名">{{ info.mName }}(ID:{{ info.mid }})</cell>
+        <cell title="等级">{{ info.mLevel }}</cell>
+      </group>
+      <group title="返利">
+        <cell title="提供方">{{ info.fromName }}(ID:{{ info.fromid }})</cell>
+        <cell title="提供方等级">{{ info.fromLevel }}</cell>
+        <cell title="类型">{{ info.type }}</cell>
+        <cell title="金额">{{ info.rmb }}</cell>
+        <cell title="时间">{{ info.time }}</cell>
+        <cell title="返利比例">{{ info.rate }}</cell>
+        <cell title="返利数量">{{ info.rebate }}</cell>
+        <cell title="返利余额">{{ info.bal }}</cell>
+      </group>
+    </div>
+  </layout>
 </template>
 
 <script>
+  import Layout from '../Layout'
   import {
-    XHeader,
     Cell,
     Group
   } from 'vux'
 
   export default {
     components: {
-      XHeader,
+      Layout,
       Cell,
       Group
     },
-    data () {
-      return {
-        order: {
-          id: 'order1245',
-          name: '代理人1244',
-          type: '充值返利',
-          amount: 25,
-          ctime: '2018-10-10 10:10:00',
-          status: '成功',
-          balance: 3435.1,
-          remark: '备注备注'
-        }
+    computed: {
+      info: function () {
+        return this.$store.getters.rowTmp
       }
     }
   }
 </script>
 
 <style>
-  .vux-demo {
-    text-align: center;
-  }
 
-  .logo {
-    width: 100px;
-    height: 100px
-  }
 </style>

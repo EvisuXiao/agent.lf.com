@@ -1,44 +1,55 @@
 <template>
-  <div>
-    <x-header :left-options="{ backText: '' }" title="详情"></x-header>
+  <layout title="账单详情">
     <group>
-      <cell title="名称">{{ order.name }}</cell>
-      <cell title="数量">{{ order.amount }}</cell>
-      <cell title="时间">{{ order.ctime }}</cell>
-      <cell title="状态">{{ order.status }}</cell>
+      <cell title="货币类型">{{ info.money }}</cell>
+      <cell title="交易类型">{{ info.type }}</cell>
+      <cell title="渠道">{{ info.channel }}</cell>
     </group>
-    <group title="备注">
-      <cell title="俱乐部">{{ order.club }}</cell>
-      <cell title="游戏类型">{{ order.gameType }}</cell>
-      <cell title="房间号">{{ order.room }}</cell>
+    <group title="操作人">
+      <cell title="ID">{{ info.opId }}</cell>
+      <cell title="名称">{{ info.opName }}</cell>
+      <cell title="等级">{{ info.opLevel }}</cell>
+      <cell title="余额">{{ info.opBal }}</cell>
     </group>
-  </div>
+    <group title="被操作人">
+      <cell title="ID">{{ info.obId }}</cell>
+      <cell title="名称">{{ info.obName }}</cell>
+      <cell title="等级">{{ info.obLevel }}</cell>
+      <cell title="余额">{{ info.obBal }}</cell>
+    </group>
+    <group title="订单">
+      <cell title="订单号">{{ info.selfOrder }}</cell>
+      <cell title="钻石数量">{{ info.num }}</cell>
+      <cell title="金额">{{ info.rmb }}</cell>
+      <cell title="时间">{{ milli2Datetime(info.time) }}</cell>
+      <cell title="充值平台订单号">{{ info.platOrder }}</cell>
+      <cell title="备注">{{ info.note }}</cell>
+    </group>
+  </layout>
 </template>
 
 <script>
+  import Layout from '../Layout'
   import {
-    XHeader,
     Cell,
     Group
   } from 'vux'
+  import { milli2Datetime } from '../../utils'
 
   export default {
     components: {
-      XHeader,
+      Layout,
       Cell,
       Group
     },
-    data () {
-      return {
-        order: {
-          name: '代理人1244',
-          amount: 25,
-          ctime: '2018-10-10 10:10:00',
-          status: '成功',
-          club: '纯属娱乐',
-          gameType: '棋牌',
-          room: 9001
-        }
+    computed: {
+      info: function () {
+        return this.$store.getters.rowTmp
+      }
+    },
+    methods: {
+      milli2Datetime (ms, fmt = 'YYYY-MM-DD HH:mm:ss') {
+        return milli2Datetime(ms, fmt)
       }
     }
   }

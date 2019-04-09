@@ -21,16 +21,13 @@
 <script>
   import Layout from './index'
   import VueBetterScroll from 'vue2-better-scroll'
-  import {
-    Loading
-  } from 'vux'
+  import { needRefreshList } from '../../utils'
 
   export default {
     name: 'LayoutTable',
     components: {
       Layout,
-      VueBetterScroll,
-      Loading
+      VueBetterScroll
     },
     props: {
       title: {
@@ -63,7 +60,8 @@
         this.bottomHeight = this.$refs.footer.offsetHeight;
       });
       this.$refs.scroll.initScroll();
-      this.onPullingDown()
+      // this.onPullingDown()
+      needRefreshList()
     },
     computed: {
       needRefresh: function () {
@@ -88,23 +86,31 @@
           }
           this.list = list;
           this.page = 1;
-          this.$refs.scroll.refresh();
           this.$refs.scroll.forceUpdate(this.list.length >= this.pageSize);
           this.$store.commit('setListTmp', this.list);
+          this.$nextTick(() => {
+            this.$refs.scroll.refresh()
+          })
         })
       },
       onPullingUp () {
         this.getData(this.page + 1, this.pageSize).then((data) => {
-          this.list = this.list.concat(data);
-          this.$refs.scroll.refresh();
+          let list = data;
+          if (list === undefined) {
+            list = []
+          }
+          this.list = this.list.concat(list);
           // 最后一页
-          if (data.length < this.pageSize) {
+          if (list.length < this.pageSize) {
             this.$refs.scroll.forceUpdate(false)
           } else {
             this.$refs.scroll.forceUpdate(true);
             this.page++
           }
           this.$store.commit('setListTmp', this.list);
+          this.$nextTick(() => {
+            this.$refs.scroll.refresh()
+          })
         })
       }
     },

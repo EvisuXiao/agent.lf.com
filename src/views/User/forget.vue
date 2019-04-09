@@ -13,7 +13,7 @@
         <x-input type="password" title="确认密码" placeholder="再次输入密码" v-model="cfmPwd"></x-input>
       </group>
       <group>
-        <x-button style="border-radius:99px;" type="primary" :disabled="!code || !pwd || !cfmPwd" @click.native="submit">重设密码</x-button>
+        <x-button class="button-circle" type="primary" :disabled="!code || !pwd || !cfmPwd" @click.native="submit">重设密码</x-button>
       </group>
     </div>
   </layout>
@@ -79,5 +79,7 @@
 </script>
 
 <style>
-
+  .button-circle {
+    border-radius: 99px;
+  }
 </style>

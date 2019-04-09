@@ -7,7 +7,7 @@
         <popup-picker title="所属银行" placeholder="请输入所属银行" :data="bankList" v-model="card.bankName"></popup-picker>
       </group>
       <group>
-        <x-button type="primary" style="border-radius:99px;" :disabled="!card.name || !card.cardNum || !card.bankName.length" @click.native="submit">添加银行卡</x-button>
+        <x-button class="button-circle" type="primary" :disabled="!card.name || !card.cardNum || !card.bankName.length" @click.native="submit">添加银行卡</x-button>
       </group>
     </div>
   </layout>
@@ -76,5 +76,7 @@
 </script>
 
 <style>
-
+  .button-circle {
+    border-radius: 99px;
+  }
 </style>

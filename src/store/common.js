@@ -1,10 +1,14 @@
 const common = {
   state: {
+    loading: false,
     listRefresh: false,
     listTmp: {},
     rowTmp: {}
   },
   mutations: {
+    setLoading (state, n) {
+      state.loading = n
+    },
     setListRefresh (state, n) {
       state.listRefresh = n
     },

@@ -3,7 +3,7 @@
     <card>
       <div slot="header">
         <cell is-link link="/user" value="信息设置">
-          <img slot="icon" width="90" :src="require('../../assets/avatar_boy.png')" alt="头像">
+          <img slot="icon" class="card-padding" width="48" :src="avatar" alt="头像">
           <div slot="title">{{ uInfo.name }}<br/>ID: {{ uInfo.mid }}</div>
         </cell>
       </div>
@@ -30,7 +30,7 @@
       </cell>
       <cell title="我的代理" is-link link="/team"></cell>
       <cell title="钻石充值" is-link link="/diamond/charge"></cell>
-      <cell title="我的账单" is-link link="/diamond/change"></cell>
+      <cell title="我的账单" is-link link="/diamond"></cell>
       <cell title="资金记录" is-link link="/fund"></cell>
       <cell title="消息中心" is-link link="/notice"></cell>
       <cell title="帮助中心" is-link link="/help"></cell>
@@ -40,13 +40,13 @@
       <cell title="我的代理" is-link link="/team"></cell>
       <cell title="钻石充值" is-link link="/diamond/charge"></cell>
       <cell title="出售钻石" is-link link="/diamond/sell"></cell>
-      <cell title="我的账单" is-link link="/diamond/change"></cell>
+      <cell title="我的账单" is-link link="/diamond"></cell>
       <cell title="代理申请" is-link link="/team/apply"></cell>
       <cell title="消息中心" is-link link="/notice"></cell>
       <cell title="帮助中心" is-link link="/help"></cell>
     </group>
     <group>
-      <x-button type="warn" style="border-radius:99px;" @click.native="logout">退出</x-button>
+      <x-button class="button-circle" type="warn" @click.native="logout">退出</x-button>
     </group>
   </div>
 </template>
@@ -71,6 +71,13 @@
     computed: {
       uInfo: function () {
         return this.$store.getters.userInfo
+      },
+      avatar: function () {
+        const avatar = this.uInfo.headimgurl;
+        if (avatar) {
+          return avatar
+        }
+        return require('../../assets/avatar_boy.png')
       },
       rebateMode: function () {
         return isRebateMode()
@@ -119,10 +126,14 @@
   .card-demo-flex > div {
     flex: 1;
     text-align: center;
-    font-size: 12px;
+    font-size: 25px;
   }
 
   .card-demo-flex span {
     color: #f74c31;
+  }
+
+  .button-circle {
+    border-radius: 99px;
   }
 </style>

@@ -11,7 +11,7 @@
         <x-input title="验证码" v-model="code"></x-input>
       </group>
       <group>
-        <x-button style="border-radius:99px;" type="primary" :disabled="!code || !phone" @click.native="submit">认证手机号</x-button>
+        <x-button class="button-circle" type="primary" :disabled="!code || !phone" @click.native="submit">认证手机号</x-button>
       </group>
     </div>
   </layout>
@@ -72,5 +72,7 @@
 </script>
 
 <style>
-
+  .button-circle {
+    border-radius: 99px;
+  }
 </style>

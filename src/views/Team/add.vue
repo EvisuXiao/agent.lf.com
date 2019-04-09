@@ -11,7 +11,7 @@
         <x-input title="手机号" text-align="right" v-model="user.phone"></x-input>
       </group>
       <group>
-        <x-button type="primary" :disabled="!user || !user.phone" style="border-radius:99px;" @click.native="submit">申请</x-button>
+        <x-button class="button-circle" type="primary" :disabled="!user || !user.phone" @click.native="submit">申请</x-button>
       </group>
     </div>
   </layout>
@@ -63,12 +63,7 @@
 </script>
 
 <style>
-  .vux-demo {
-    text-align: center;
-  }
-
-  .logo {
-    width: 100px;
-    height: 100px
+  .button-circle {
+    border-radius: 99px;
   }
 </style>

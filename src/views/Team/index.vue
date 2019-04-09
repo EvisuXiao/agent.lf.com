@@ -30,6 +30,7 @@
     <group slot="bottom" :gutter="0">
       <cell>
         <div slot="title">总人数: {{ total }}</div>
+        <x-button v-if="rebateMode" type="primary" link="/team/upgrade">添加</x-button>
       </cell>
     </group>
     <group slot="search" :gutter="0">
@@ -45,6 +46,7 @@
     Group,
     Tab,
     TabItem,
+    XButton,
     XInput,
     XTable
   } from 'vux'
@@ -58,6 +60,7 @@
       Group,
       Tab,
       TabItem,
+      XButton,
       XInput,
       XTable
     },
@@ -92,8 +95,10 @@
         needRefreshList()
       },
       onItemClick (index) {
-        this.curTab = index;
-        this.refresh()
+        if (this.curTab !== index) {
+          this.curTab = index;
+          this.refresh()
+        }
       },
       milli2Datetime (ms, fmt = 'YYYY-MM-DD HH:mm:ss') {
         return milli2Datetime(ms, fmt)

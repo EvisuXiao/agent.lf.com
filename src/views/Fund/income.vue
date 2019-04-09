@@ -8,24 +8,21 @@
       <group :gutter="0">
         <x-table :cell-bordered="false">
           <thead>
-            <tr v-if="curTab === 0">
-              <th>用户名/ID</th>
-              <th>额度</th>
-              <th>返利</th>
-            </tr>
-            <tr v-else>
+            <tr>
               <th>用户名/ID</th>
               <th>充值</th>
               <th>返利</th>
             </tr>
           </thead>
-          <tbody>
-            <tr v-if="curTab === 0" v-for="item in list" @click="showDetail(item)">
+          <tbody v-if="curTab === 0">
+            <tr v-for="item in list" @click="showDetail(item)">
               <td>{{ item.name }}(ID: {{ item.mid }})<br />{{ milli2Datetime(item.time) }}</td>
-              <td>{{ item.type }}<br />{{ item.rmb }}</td>
-              <td>{{ item.type }}<br />{{ item.rebate }}</td>
+              <td>{{ item.rmb }}</td>
+              <td>{{ item.rebate }}</td>
             </tr>
-            <tr v-else v-for="item in list" @click="showDetail(item)">
+          </tbody>
+          <tbody v-else>
+            <tr v-for="item in list" @click="showDetail(item)">
               <td>{{ item.name }}<br />{{ item.uid }}</td>
               <td>{{ item.rmb }}</td>
               <td>{{ item.rebate }}</td>
@@ -36,11 +33,13 @@
     </div>
     <group slot="search" :gutter="0">
       <div v-if="curTab === 0">
+        <datetime title="开始时间" format="YYYY-MM-DD HH:mm" v-model="startTime"></datetime>
+        <datetime title="结束时间" format="YYYY-MM-DD HH:mm" v-model="endTime"></datetime>
       </div>
       <div v-else>
         <popup-picker title="区间" :data="timeTypeList" v-model="timeType"></popup-picker>
-        <datetime title="开始时间" format="YYYY-MM-DD HH:mm" :readonly="timeType[0] !== '自定义'" v-model="startTime"></datetime>
-        <datetime title="结束时间" format="YYYY-MM-DD HH:mm" :readonly="timeType[0] !== '自定义'" v-model="endTime"></datetime>
+        <!--<datetime title="开始时间" format="YYYY-MM-DD HH:mm" :readonly="timeType[0] !== '自定义'" v-model="startTime"></datetime>-->
+        <!--<datetime title="结束时间" format="YYYY-MM-DD HH:mm" :readonly="timeType[0] !== '自定义'" v-model="endTime"></datetime>-->
       </div>
     </group>
   </layout-table>
@@ -83,8 +82,7 @@
             '全部',
             '今日',
             '本周',
-            '本月',
-            '自定义'
+            '本月'
           ]
         ]
       }
@@ -105,7 +103,7 @@
           }
           case '今日': {
             this.startTime = dateFormat(date, 'YYYY-MM-DD 00:00:00');
-            this.endTime = dateFormat(date, 'YYYY-MM-DD 23:59:59');
+            this.endTime = dateFormat(date, 'YYYY-MM-DD 00:00:00');
             break;
           }
           case '本周': {
@@ -116,7 +114,7 @@
             date.setDate(date.getDate() - num + 1);
             this.startTime = dateFormat(date, 'YYYY-MM-DD 00:00:00');
             date.setDate(date.getDate() + 6);
-            this.endTime = dateFormat(date, 'YYYY-MM-DD 23:59:59');
+            this.endTime = dateFormat(date, 'YYYY-MM-DD 00:00:00');
             break;
           }
           case '本月': {
@@ -124,7 +122,7 @@
             this.startTime = dateFormat(date, 'YYYY-MM-DD 00:00:00');
             date.setMonth(date.getMonth() + 1);
             date.setDate(date.getDate() - 1);
-            this.endTime = dateFormat(date, 'YYYY-MM-DD 23:59:59');
+            this.endTime = dateFormat(date, 'YYYY-MM-DD 00:00:00');
           }
         }
       }
@@ -133,7 +131,7 @@
       fetchData (page, pageSize) {
         if (this.curTab === 0) {
           return new Promise(resolve => {
-            getRebateList(page, pageSize).then(response => {
+            getRebateList(page, pageSize, 0, 0, 'pay', this.startTime, this.endTime).then(response => {
               let newList = [];
               for (let i in response.info) {
                 newList.push(this.formatList(response.info[i], response.userInfo))
@@ -144,7 +142,7 @@
           })
         }
         return new Promise(resolve => {
-          getRebateStat(page, pageSize).then(response => {
+          getRebateStat(page, pageSize, this.startTime, this.endTime).then(response => {
             this.total = response.count;
             resolve(response.info)
           })
@@ -154,8 +152,10 @@
         needRefreshList()
       },
       onItemClick (index) {
-        this.curTab = index;
-        this.refresh()
+        if (this.curTab !== index) {
+          this.curTab = index;
+          this.refresh()
+        }
       },
       milli2Datetime (ms, fmt = 'YYYY-MM-DD HH:mm:ss') {
         return milli2Datetime(ms, fmt)
@@ -164,39 +164,25 @@
         return levelName(level)
       },
       showDetail (row) {
-        this.$store.commit('setRowTmp', row)
+        this.$store.commit('setRowTmp', row);
         if (this.curTab === 0) {
-          this.$router.push({ path: '/fund/recDetail' })
+          this.$router.push({ path: '/fund/detail' })
         } else {
           this.$router.push({ path: '/fund/statDetail' })
         }
       },
       formatList (row, user) {
-        if (row.type === 'trade') {
-          let mid = this.mid ? this.mid : this.$store.getters.userInfo.mid;
-          row.type = row.opId === mid ? '出售' : '购买'
-        } else {
-          const label = {
-            pay: '充值',
-            cost: '消耗',
-            award: '奖励',
-            deduct: '管理扣除'
-          };
-          row.type = label[row.type]
-        }
-        if (row.channel) {
-          const channel = {
-            aiBei: '爱贝支付',
-            rebate: '返利充值',
-            clubTable: '茶楼',
-            table: '好友'
-          };
-          row.channel = channel[row.channel]
-        }
-        row.opName = user[row.opId];
-        row.obName = user[row.obId];
-        row.opLevel = levelName(row.opLevel);
-        row.obLevel = levelName(row.obLevel);
+        const label = {
+          pay: '充值',
+          use: '使用',
+          withdraw: '提现'
+        };
+        row.type = label[row.type];
+        row.mName = user[row.mid];
+        row.mLevel = levelName(row.mLevel);
+        row.fromName = user[row.fromId];
+        row.fromLevel = levelName(row.fromLevel);
+        row.time = milli2Datetime(row.time);
         return row
       }
     }

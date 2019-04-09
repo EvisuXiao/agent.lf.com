@@ -62,14 +62,12 @@ export function levelTab () {
     4: '联合运营'
   };
   const level = store.getters.userInfo.level;
-  if (level < 2) {
-    return {
-      0: '全部'
-    }
+  if (level === 4) {
+    return allLabel
   }
   let label = {};
   for (let key in allLabel) {
-    if (key <= level) {
+    if (key < level) {
       label[key] = allLabel[key]
     }
   }

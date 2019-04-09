@@ -1,127 +1,147 @@
 <template>
-  <div>
-    <x-header :left-options="{ backText: '' }" title="钻石记录">
-      <div slot="right" @click="show=true">
-        <icon type="search"></icon>
-      </div>
-    </x-header>
-    <tab>
-      <tab-item selected @on-item-click="onItemClick">全部</tab-item>
-      <tab-item @on-item-click="onItemClick">买钻</tab-item>
-      <tab-item @on-item-click="onItemClick">牌友群消耗</tab-item>
-      <tab-item @on-item-click="onItemClick">奖励</tab-item>
+  <layout-table title="我的账单" :show-icon="true" :getData="fetchData" @search-hide="refresh">
+    <tab slot="header" v-if="!mid">
+      <tab-item v-for="(value, key) in tabLabel" :key="key" :selected="parseInt(key) === 0" @on-item-click="onItemClick(key)">{{ value }}</tab-item>
     </tab>
-    <group>
-      <x-table :cell-bordered="false">
-        <thead>
-        <tr>
-          <th v-for="title in titles">{{ title }}</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr v-for="item in list" @click="showDetail">
-          <td v-for="(title, key) in titles">
-            <span v-if="key === 'name'">{{ item[key] }}(ID: {{ item.id }})<br/>{{ item.ctime }}</span>
-            <span v-else-if="key === 'amount'">{{ item.type === 1 ? '+' : '-'}}{{ item[key] }}</span>
-            <span v-else-if="key !== 'type' && key !== 'ctime' && key !== 'id'">{{ item[key] }}</span>
-          </td>
-        </tr>
-        </tbody>
-      </x-table>
-      <x-dialog v-model="show" hide-on-blur class="dialog-demo">
-        <group>
-          <datetime title="开始时间" format="YYYY-MM-DD HH:mm" v-model="startTime"></datetime>
-          <datetime title="结束时间" format="YYYY-MM-DD HH:mm" v-model="endTime"></datetime>
+    <div>
+      <div>
+        <group :gutter="0">
+          <x-table :cell-bordered="false">
+            <thead>
+            <tr>
+              <th>时间</th>
+              <th>类型</th>
+              <th>数量</th>
+              <th>目标ID</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr v-for="item in list" @click="showDetail(item)">
+              <td>{{ milli2Datetime(item.time, 'YYYY-MM-DD') }}<br />{{ milli2Datetime(item.time, 'HH:mm:ss') }}</td>
+              <td>{{ item.type }}</td>
+              <td>{{ item.num }}</td>
+              <td>{{ item.obId }}</td>
+            </tr>
+            </tbody>
+          </x-table>
         </group>
-      </x-dialog>
-      <cell>
-        <span>成功合计: {{ total }}</span>
-      </cell>
+      </div>
+    </div>
+    <group slot="search" :gutter="0">
+      <datetime title="开始时间" format="YYYY-MM-DD HH:mm" v-model="startTime"></datetime>
+      <datetime title="结束时间" format="YYYY-MM-DD HH:mm" v-model="endTime"></datetime>
     </group>
-  </div>
+  </layout-table>
 </template>
 
 <script>
-  import {XHeader, Datetime, Tab, TabItem, XTable, Cell, Icon, XDialog, XButton, XInput, Group} from 'vux'
+  import LayoutTable from '../Layout/table'
+  import {
+    Datetime,
+    Group,
+    Tab,
+    TabItem,
+    XTable
+  } from 'vux'
+  import { milli2Datetime, levelName, needRefreshList } from '../../utils'
+  import { getDiamondChangeList } from '../../api'
 
   export default {
     components: {
-      XHeader, Datetime, Tab, TabItem, XTable, Cell, Icon, XDialog, XButton, XInput, Group
+      LayoutTable,
+      Datetime,
+      Group,
+      Tab,
+      TabItem,
+      XTable
     },
     data () {
       return {
-        list: [
-          {
-            id: '12345',
-            name: '代理12',
-            status: '成功',
-            type: 1,
-            amount: 25,
-            ctime: '2018-10-10 10:10:00'
-          },
-          {
-            id: '12345',
-            name: '代理12',
-            status: '成功',
-            type: 1,
-            amount: 25,
-            ctime: '2018-10-10 10:10:00'
-          },
-          {
-            id: '12345',
-            name: '代理12',
-            status: '成功',
-            type: 2,
-            amount: 25,
-            ctime: '2018-10-10 10:10:00'
-          },
-          {
-            id: '12345',
-            name: '代理12',
-            status: '成功',
-            type: 1,
-            amount: 25,
-            ctime: '2018-10-10 10:10:00'
-          },
-          {
-            id: '12345',
-            name: '代理12',
-            status: '成功',
-            type: 1,
-            amount: 25,
-            ctime: '2018-10-10 10:10:00'
-          }
-        ],
-        titles: {
-          name: '名称/时间',
-          status: '状态',
-          amount: '数量'
-        },
-        total: 100,
-        startTime: null,
-        endTime: null,
-        show: false,
-        searchText: ''
+        curTab: 0,
+        tabLabel: ['全部', '充值', '出售', '奖励', '茶楼'],
+        mid: 0,
+        startTime: '',
+        endTime: ''
       }
     },
+    computed: {
+      list: function () {
+        return this.$store.getters.listTmp
+      }
+    },
+    created () {
+      this.init()
+    },
     methods: {
-      onItemClick (index) {
-        console.log('on item click:', index)
+      init () {
+        if (this.$route.query.mid) {
+          this.mid = this.$route.query.mid;
+          this.curTab = 2 // 有id传入为销售类
+        }
       },
-      showDetail () {
-        this.$router.push({path: '/diamond/detail'})
+      fetchData (page, pageSize) {
+        return new Promise(resolve => {
+          getDiamondChangeList(this.mid, this.curTab, page, pageSize, this.startTime, this.endTime).then(response => {
+            let newList = [];
+            for (let i in response.info) {
+              newList.push(this.formatList(response.info[i], response.userInfo))
+            }
+            this.total = response.count;
+            resolve(newList)
+          })
+        })
+      },
+      refresh () {
+        needRefreshList()
+      },
+      formatList (row, user) {
+        if (row.type === 'trade') {
+          let mid = this.mid ? this.mid : this.$store.getters.userInfo.mid;
+          row.type = row.opId === mid ? '出售' : '购买'
+        } else {
+          const label = {
+            pay: '充值',
+            cost: '消耗',
+            award: '奖励',
+            deduct: '管理扣除'
+          };
+          row.type = label[row.type]
+        }
+        if (row.channel) {
+          const channel = {
+            aiBei: '爱贝支付',
+            rebate: '返利充值',
+            clubTable: '茶楼',
+            table: '好友'
+          };
+          row.channel = channel[row.channel]
+        }
+        row.opName = user[row.opId];
+        row.obName = user[row.obId];
+        row.opLevel = levelName(row.opLevel);
+        row.obLevel = levelName(row.obLevel);
+        return row
+      },
+      onItemClick (index) {
+        if (this.curTab !== index) {
+          this.curTab = index;
+          this.refresh()
+        }
+      },
+      milli2Datetime (ms, fmt = 'YYYY-MM-DD HH:mm:ss') {
+        return milli2Datetime(ms, fmt)
+      },
+      levelName (level) {
+        return levelName(level)
+      },
+      showDetail (row) {
+        this.$store.commit('setRowTmp', row);
+        this.$router.push({ path: '/diamond/detail' })
       }
     }
   }
 </script>
 
 <style>
-  .vux-demo {
-    text-align: center;
-  }
 
-  .logo {
-    width: 100px;
-    height: 100px
-  }
 </style>

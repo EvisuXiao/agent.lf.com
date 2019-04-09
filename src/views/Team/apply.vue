@@ -82,8 +82,10 @@
         needRefreshList()
       },
       onItemClick (index) {
-        this.curTab = index;
-        needRefreshList()
+        if (this.curTab !== index) {
+          this.curTab = index;
+          this.refresh()
+        }
       },
       statusMap (status) {
         const map = {

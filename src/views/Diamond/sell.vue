@@ -18,7 +18,7 @@
         <x-input title="备注" text-align="right" v-model="sell.note"></x-input>
       </group>
       <group>
-        <x-button type="primary" :disabled="!user || !sell.num" style="border-radius:99px;" @click.native="submit">出售</x-button>
+        <x-button class="button-circle" type="primary" :disabled="!user || !sell.num" @click.native="submit">出售</x-button>
       </group>
     </div>
   </layout>
@@ -76,5 +76,7 @@
 </script>
 
 <style>
-  
+  .button-circle {
+    border-radius: 99px;
+  }
 </style>
