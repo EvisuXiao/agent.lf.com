@@ -13,7 +13,7 @@
       </cell>
     </group>
     <group>
-      <x-button class="button-circle" :show-loading="loading" :disabled="buttonDisabled" type="primary" @click.native="login">登录</x-button>
+      <x-button style="border-radius: 99px;" :show-loading="loading" :disabled="buttonDisabled" type="primary" @click.native="login">登录</x-button>
     </group>
   </div>
 </template>
@@ -92,9 +92,5 @@
     text-align: center;
     width: 100%;
     height: 100%
-  }
-
-  .button-circle {
-    border-radius: 99px;
   }
 </style>
