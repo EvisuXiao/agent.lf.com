@@ -129,7 +129,7 @@
   .card-demo-flex > div {
     flex: 1;
     text-align: center;
-    font-size: 25px;
+    font-size: 14px;
   }
 
   .card-demo-flex span {

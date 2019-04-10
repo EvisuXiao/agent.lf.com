@@ -12,7 +12,7 @@
           </thead>
           <tbody>
             <tr v-for="item in list" @click="showDetail(item)">
-              <td>{{ item.name }}(ID: {{ item.mid }})<br />{{ milli2Datetime(item.time) }}</td>
+              <td>{{ item.name }}(ID: {{ item.mid }})<br />{{ item.time }}</td>
               <td>{{ item.type }}<br />{{ item.rmb }}</td>
               <td><span :class="item.type === '充值' ? 'red-font' : 'green-font'">{{ item.rebate }}</span></td>
             </tr>

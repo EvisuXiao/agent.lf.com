@@ -11,19 +11,14 @@ module.exports = {
     assetsSubDirectory: 'static',
     assetsPublicPath: '/',
     proxyTable: {
-      '/api/v1/p/getJssdkConfig': {
-        target: 'http://xm.pullmi.cn',
-        changeOrigin: true,
-      },
       '/': {
-        // target: 'http://xm.pullmi.cn',
         target: 'http://120.27.234.219:888',
-        // target: 'http://127.0.0.1:8888',
         changeOrigin: true,
       },
     },
 
     // Various Dev Server settings
+    // host: 'localhost', // can be overwritten by process.env.HOST
     host: '10.70.70.157', // can be overwritten by process.env.HOST
     port: 8080, // can be overwritten by process.env.PORT, if port is in use, a free one will be determined
     autoOpenBrowser: false,
@@ -66,7 +61,7 @@ module.exports = {
     // Paths
     assetsRoot: path.resolve(__dirname, '../dist'),
     assetsSubDirectory: 'static',
-    assetsPublicPath: './',
+    assetsPublicPath: '/',
 
     /**
      * Source Maps
