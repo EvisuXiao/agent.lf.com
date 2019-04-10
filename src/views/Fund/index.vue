@@ -1,5 +1,5 @@
 <template>
-  <layout-table title="资金记录" show-icon :getData="fetchData" @search-hide="refresh">
+  <layout-table title="资金记录" show-icon :getData="fetchData" @search-do="refresh">
     <div>
       <group :gutter="0">
         <x-table :cell-bordered="false">
@@ -14,7 +14,7 @@
             <tr v-for="item in list" @click="showDetail(item)">
               <td>{{ item.name }}(ID: {{ item.mid }})<br />{{ milli2Datetime(item.time) }}</td>
               <td>{{ item.type }}<br />{{ item.rmb }}</td>
-              <td>{{ item.rebate }}</td>
+              <td><span :class="item.type === '充值' ? 'red-font' : 'green-font'">{{ item.rebate }}</span></td>
             </tr>
           </tbody>
         </x-table>
@@ -23,8 +23,8 @@
     <group slot="search" :gutter="0">
       <div>
         <popup-picker title="类型" show-name :disabled="mode !== ''" :data="typeList" v-model="type"></popup-picker>
-        <datetime title="开始时间" format="YYYY-MM-DD HH:mm" v-model="startTime"></datetime>
-        <datetime title="结束时间" format="YYYY-MM-DD HH:mm" v-model="endTime"></datetime>
+        <calendar title="开始时间" v-model="startTime"></calendar>
+        <calendar title="结束时间" v-model="endTime"></calendar>
       </div>
     </group>
   </layout-table>
@@ -33,7 +33,7 @@
 <script>
   import LayoutTable from '../Layout/table'
   import {
-    Datetime,
+    Calendar,
     Group,
     PopupPicker,
     Tab,
@@ -41,13 +41,13 @@
     XInput,
     XTable
   } from 'vux'
-  import { milli2Datetime, needRefreshList, levelName } from '../../utils'
+  import { milli2Datetime, needRefreshList, levelName, defalutPeriod } from '../../utils'
   import { getRebateList } from '../../api'
 
   export default {
     components: {
       LayoutTable,
-      Datetime,
+      Calendar,
       Group,
       PopupPicker,
       Tab,
@@ -80,8 +80,8 @@
           ]
         ],
         type: [''],
-        startTime: '',
-        endTime: ''
+        startTime: [],
+        endTime: []
       }
     },
     computed: {
@@ -94,6 +94,9 @@
     },
     methods: {
       init () {
+        const time = defalutPeriod();
+        this.startTime = time[0];
+        this.endTime = time[1];
         if (this.$route.query.mode) {
           this.mode = this.$route.query.mode;
           this.type = [this.mode]
@@ -143,5 +146,11 @@
 </script>
 
 <style>
+  .red-font {
+    color: red;
+  }
 
+  .green-font {
+    color: green;
+  }
 </style>

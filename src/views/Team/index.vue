@@ -1,6 +1,6 @@
 <template>
-  <layout-table title="我的代理" show-icon :getData="fetchData" @search-hide="refresh">
-    <tab slot="header">
+  <layout-table title="我的代理" :show-icon="!other" :getData="fetchData" @search-do="refresh">
+    <tab slot="header" v-if="!other">
       <tab-item v-for="(value, key) in tabLabel" :key="key" :selected="parseInt(key) === 0" @on-item-click="onItemClick(key)">{{ value }}</tab-item>
     </tab>
     <div>
@@ -30,11 +30,11 @@
     <group slot="bottom" :gutter="0">
       <cell>
         <div slot="title">总人数: {{ total }}</div>
-        <x-button v-if="rebateMode" type="primary" link="/team/upgrade">添加</x-button>
+        <x-button v-if="rebateMode && !other" type="primary" link="/team/upgrade">添加</x-button>
       </cell>
     </group>
     <group slot="search" :gutter="0">
-      <x-input title="ID" text-align="right" v-model="searchMid"></x-input>
+      <x-input title="ID" placeholder="请输入代理ID" text-align="right" v-model="searchMid"></x-input>
     </group>
   </layout-table>
 </template>
@@ -68,7 +68,8 @@
       return {
         curTab: 0,
         total: 0,
-        searchMid: 0
+        other: false,
+        searchMid: ''
       }
     },
     computed: {
@@ -82,7 +83,16 @@
         return isRebateMode()
       }
     },
+    created () {
+      this.init()
+    },
     methods: {
+      init () {
+        if (this.$route.query.mid) {
+          this.searchMid = this.$route.query.mid;
+          this.other = true
+        }
+      },
       fetchData (page, pageSize) {
         return new Promise(resolve => {
           getMemberList(page, pageSize, this.searchMid, this.curTab).then(response => {
@@ -97,6 +107,9 @@
       onItemClick (index) {
         if (this.curTab !== index) {
           this.curTab = index;
+          if (!this.other) {
+            this.searchMid = ''
+          }
           this.refresh()
         }
       },

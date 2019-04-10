@@ -5,7 +5,7 @@
       <cell title="姓名">{{ info.name }}</cell>
       <cell title="角色">{{ levelName(info.level) }}</cell>
       <cell v-if="rebateMode" title="最高返利" is-link link="/help">
-        <span>{{ info.rebate }}%</span>
+        <span>{{ info.rate }}%</span>
       </cell>
       <cell title="手机号码" is-link link="/user/mobile">{{ info.phone }}</cell>
       <cell title="我的邀请人">{{ info.recName }}</cell>

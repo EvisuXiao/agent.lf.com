@@ -11,7 +11,7 @@
         <cell title="类型">{{ info.type }}</cell>
         <cell title="金额">{{ info.rmb }}</cell>
         <cell title="时间">{{ info.time }}</cell>
-        <cell title="返利比例">{{ info.rate }}</cell>
+        <cell title="返利比例">{{ info.rate }}%</cell>
         <cell title="返利数量">{{ info.rebate }}</cell>
         <cell title="返利余额">{{ info.bal }}</cell>
       </group>

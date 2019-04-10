@@ -1,6 +1,6 @@
 <template>
-  <layout-table title="我的收益" show-icon :getData="fetchData" @search-hide="refresh">
-    <tab slot="header">
+  <layout-table title="我的收益" :show-icon="!mType" :getData="fetchData" @search-do="refresh">
+    <tab slot="header" v-if="!mType">
       <tab-item selected @on-item-click="onItemClick">收益记录</tab-item>
       <tab-item @on-item-click="onItemClick">收益统计</tab-item>
     </tab>
@@ -33,13 +33,13 @@
     </div>
     <group slot="search" :gutter="0">
       <div v-if="curTab === 0">
-        <datetime title="开始时间" format="YYYY-MM-DD HH:mm" v-model="startTime"></datetime>
-        <datetime title="结束时间" format="YYYY-MM-DD HH:mm" v-model="endTime"></datetime>
+        <calendar title="开始时间" v-model="startTime"></calendar>
+        <calendar title="结束时间" v-model="endTime"></calendar>
       </div>
       <div v-else>
         <popup-picker title="区间" show-name :data="timeTypeList" v-model="timeType"></popup-picker>
-        <!--<datetime title="开始时间" format="YYYY-MM-DD HH:mm" :readonly="timeType[0] !== '自定义'" v-model="startTime"></datetime>-->
-        <!--<datetime title="结束时间" format="YYYY-MM-DD HH:mm" :readonly="timeType[0] !== '自定义'" v-model="endTime"></datetime>-->
+        <!--<calendar title="开始时间" :readonly="timeType[0] !== '自定义'" v-model="startTime"></calendar>-->
+        <!--<calendar title="结束时间" :readonly="timeType[0] !== '自定义'" v-model="endTime"></calendar>-->
       </div>
     </group>
   </layout-table>
@@ -48,7 +48,7 @@
 <script>
   import LayoutTable from '../Layout/table'
   import {
-    Datetime,
+    Calendar,
     Group,
     PopupPicker,
     Tab,
@@ -56,13 +56,13 @@
     XInput,
     XTable
   } from 'vux'
-  import { milli2Datetime, needRefreshList, levelName, timePeriod } from '../../utils'
+  import { milli2Datetime, needRefreshList, levelName, defalutPeriod, timePeriod } from '../../utils'
   import { getRebateList, getRebateStat } from '../../api'
 
   export default {
     components: {
       LayoutTable,
-      Datetime,
+      Calendar,
       Group,
       PopupPicker,
       Tab,
@@ -73,6 +73,8 @@
     data () {
       return {
         curTab: 0,
+        mid: 0,
+        mType: 0,
         startTime: '',
         endTime: '',
         timeType: ['0'],
@@ -110,11 +112,27 @@
         this.endTime = time[1]
       }
     },
+    created () {
+      this.init()
+    },
     methods: {
+      init () {
+        if (this.$route.query.mid && this.$route.query.timeType && this.$route.query.mType) {
+          this.mid = this.$route.query.mid;
+          this.mType = this.$route.query.mType;
+          this.timeType = [this.$route.query.timeType]
+        } else {
+          if (this.curTab === 0) {
+            const time = defalutPeriod();
+            this.startTime = time[0];
+            this.endTime = time[1]
+          }
+        }
+      },
       fetchData (page, pageSize) {
         if (this.curTab === 0) {
           return new Promise(resolve => {
-            getRebateList(page, pageSize, 0, 0, 'pay', this.startTime, this.endTime).then(response => {
+            getRebateList(page, pageSize, this.mid, this.mType, 'pay', this.startTime, this.endTime).then(response => {
               let newList = [];
               for (let i in response.info) {
                 newList.push(this.formatList(response.info[i], response.userInfo))
@@ -137,6 +155,13 @@
       onItemClick (index) {
         if (this.curTab !== index) {
           this.curTab = index;
+          if (index === 0) {
+            const time = defalutPeriod();
+            this.startTime = time[0];
+            this.endTime = time[1]
+          } else {
+            this.timeType = ['0']
+          }
           this.refresh()
         }
       },

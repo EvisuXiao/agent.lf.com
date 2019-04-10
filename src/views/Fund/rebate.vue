@@ -7,9 +7,9 @@
         <cell title="时间段">{{ timeLabel(timeType) }}</cell>
       </group>
       <group>
-        <cell title="TA">{{ rebate.selfRebate }}</cell>
-        <cell v-if="rebate.zdRebate" title="TA的总代理">{{ rebate.zdRebate }}</cell>
-        <cell title="TA代理">{{ rebate.dlRebate }}</cell>
+        <cell title="TA" is-link :link="{ path: '/fund/income', query: { mid: info.mid, timeType: timeType, mType: 1 } }">{{ rebate.selfRebate }}</cell>
+        <cell v-if="rebate.zdRebate" title="TA的总代理" is-link :link="{ path: '/fund/income', query: { mid: info.mid, timeType: timeType, mType: 2 } }">{{ rebate.zdRebate }}</cell>
+        <cell title="TA代理" is-link :link="{ path: '/fund/income', query: { mid: info.mid, timeType: timeType, mType: 3 } }">{{ rebate.dlRebate }}</cell>
         <cell title="合计">{{ rebateSum }}</cell>
       </group>
     </div>

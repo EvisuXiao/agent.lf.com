@@ -1,5 +1,5 @@
 <template>
-  <layout-table title="我的账单" :show-icon="true" :getData="fetchData" @search-hide="refresh">
+  <layout-table title="我的账单" :show-icon="true" :getData="fetchData" @search-do="refresh">
     <tab slot="header" v-if="!mid">
       <tab-item v-for="(value, key) in tabLabel" :key="key" :selected="parseInt(key) === 0" @on-item-click="onItemClick(key)">{{ value }}</tab-item>
     </tab>
@@ -28,8 +28,8 @@
       </div>
     </div>
     <group slot="search" :gutter="0">
-      <datetime title="开始时间" format="YYYY-MM-DD HH:mm" v-model="startTime"></datetime>
-      <datetime title="结束时间" format="YYYY-MM-DD HH:mm" v-model="endTime"></datetime>
+      <calendar title="开始时间" v-model="startTime"></calendar>
+      <calendar title="结束时间" v-model="endTime"></calendar>
     </group>
   </layout-table>
 </template>
@@ -37,19 +37,19 @@
 <script>
   import LayoutTable from '../Layout/table'
   import {
-    Datetime,
+    Calendar,
     Group,
     Tab,
     TabItem,
     XTable
   } from 'vux'
-  import { milli2Datetime, levelName, needRefreshList } from '../../utils'
+  import { milli2Datetime, levelName, needRefreshList, defalutPeriod } from '../../utils'
   import { getDiamondChangeList } from '../../api'
 
   export default {
     components: {
       LayoutTable,
-      Datetime,
+      Calendar,
       Group,
       Tab,
       TabItem,
@@ -77,6 +77,10 @@
         if (this.$route.query.mid) {
           this.mid = this.$route.query.mid;
           this.curTab = 2 // 有id传入为销售类
+        } else {
+          const time = defalutPeriod();
+          this.startTime = time[0];
+          this.endTime = time[1]
         }
       },
       fetchData (page, pageSize) {
@@ -125,6 +129,9 @@
       onItemClick (index) {
         if (this.curTab !== index) {
           this.curTab = index;
+          const time = defalutPeriod();
+          this.startTime = time[0];
+          this.endTime = time[1];
           this.refresh()
         }
       },

@@ -20,8 +20,11 @@
     </view-box>
     <!--搜索框-->
     <div v-transfer-dom>
-      <x-dialog v-model="showDialog" hide-on-blur class="dialog-demo" :mask-z-index="500" @on-hide="$emit('search-hide')">
+      <x-dialog v-model="showDialog" hide-on-blur class="dialog-demo" :mask-z-index="500">
         <slot name="search"></slot>
+        <group :gutter="0">
+          <x-button mini action-type="button" @click.native="search">确定</x-button>
+        </group>
       </x-dialog>
     </div>
   </div>
@@ -30,8 +33,10 @@
 <script>
   import {
     Icon,
+    Group,
     TransferDomDirective as TransferDom,
     ViewBox,
+    XButton,
     XDialog,
     XHeader
   } from 'vux'
@@ -43,7 +48,9 @@
     },
     components: {
       Icon,
+      Group,
       ViewBox,
+      XButton,
       XDialog,
       XHeader
     },
@@ -81,6 +88,12 @@
         this.headerHeight = this.$refs.header.offsetHeight + 'px';
         this.bottomHeight = this.$refs.footer.offsetHeight + 'px'
       })
+    },
+    methods: {
+      search () {
+        this.$emit('search-do');
+        this.showDialog = false
+      }
     }
   }
 </script>

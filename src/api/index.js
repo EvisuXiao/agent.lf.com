@@ -34,7 +34,8 @@ export function login (phone, passwd) {
 
 export function logout () {
   return promise(Config.Logout).then(() => {
-    clearSessionId()
+    clearSessionId();
+    store.commit('setInfo', { mid: 0 })
   })
 }
 
@@ -70,6 +71,8 @@ export function changePwd (oldPass, newPass) {
   return promise(Config.ChangePwd, {
     oldPass: oldPass,
     newPass: newPass
+  }).then(() => {
+    logout()
   })
 }
 

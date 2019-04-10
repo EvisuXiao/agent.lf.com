@@ -53,13 +53,15 @@
 
 <script>
   import {
+    cookie,
+    dateFormat,
     Group,
     Cell,
     Card,
     XButton
   } from 'vux'
   import { logout, getNotice } from '../../api'
-  import { isRebateMode, milli2Datetime } from '../../utils'
+  import { isRebateMode, defalutAvatar } from '../../utils'
 
   export default {
     components: {
@@ -73,11 +75,7 @@
         return this.$store.getters.userInfo
       },
       avatar: function () {
-        const avatar = this.uInfo.headimgurl;
-        if (avatar) {
-          return avatar
-        }
-        return require('../../assets/avatar_boy.png')
+        return this.uInfo.headimgurl || defalutAvatar()
       },
       rebateMode: function () {
         return isRebateMode()
@@ -88,11 +86,16 @@
     },
     methods: {
       notice () {
-        const login = this.$store.getters.userInfo.loginTime;
-        const lastLogin = this.$store.getters.userInfo.lastLoginTime;
-        if (milli2Datetime(login, 'YYYY-MM-DD') !== milli2Datetime(lastLogin, 'YYYY-MM-DD')) {
+        const noticeKey = 'noticeTime';
+        const lastNotice = cookie.get(noticeKey, {});
+        const date = dateFormat(new Date(), 'YYYY-MM-DD');
+        if (!lastNotice || lastNotice !== date) {
           getNotice().then(data => {
-            this.showAlert(data, '公告')
+            this.showAlert(data, '公告');
+            cookie.set(noticeKey, date, {
+              path: '/',
+              expires: 1
+            });
           })
         }
       },

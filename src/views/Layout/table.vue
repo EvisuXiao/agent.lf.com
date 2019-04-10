@@ -1,5 +1,5 @@
 <template>
-  <layout :title="title" :show-icon="showIcon" @search-hide="$emit('search-hide')">
+  <layout :title="title" :show-icon="showIcon" @search-do="$emit('search-do')">
     <div slot="header" ref="header"><slot name="header"></slot></div>
     <div class="position-box" :style="{ top: headerHeight + 'px', bottom: bottomHeight + 'px' }">
       <vue-better-scroll

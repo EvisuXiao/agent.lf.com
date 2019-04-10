@@ -13,7 +13,7 @@
       <group v-if="rebateMode">
         <cell title="累计充值">{{ info.rmbAll }}</cell>
         <cell title="累计返利" is-link :link="{ path: '/fund/rebate', query: { mid: info.mid, timeType: '0' } }">{{ info.rebate }}</cell>
-        <cell title="返利比例">{{ info.rate }}</cell>
+        <cell title="返利比例">{{ info.rate }}%</cell>
       </group>
       <group v-else>
         <cell title="昨日茶楼场次">{{ info.gameCount }}</cell>
@@ -21,7 +21,7 @@
       </group>
       <group title="他的代理">
         <cell v-if="info.zdCount" title="直属总代理">{{ info.zdCount }}</cell>
-        <cell title="直属代理">{{ info.dlCount }}</cell>
+        <cell title="直属代理" is-link :link="{ path: '/team', query: { mid: info.mid } }">{{ info.dlCount }}</cell>
       </group>
       <div v-if="!rebateMode">
         <group>

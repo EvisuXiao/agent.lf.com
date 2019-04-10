@@ -43,8 +43,22 @@ export function isRebateMode () {
   return store.getters.userInfo.sysMode === 2
 }
 
+export function defalutAvatar () {
+  return 'http://img.zcool.cn/community/01786557e4a6fa0000018c1bf080ca.png'
+}
+
+export function defalutPeriod () {
+  const date = new Date();
+  const fmt = 'YYYY-MM-DD';
+  const endTime = dateFormat(date, fmt);
+  date.setDate(date.getDate() - 7);
+  const startTime = dateFormat(date, fmt);
+  return [startTime, endTime]
+}
+
 export function timePeriod (type) {
   const date = new Date();
+  const fmt = 'YYYY-MM-DD';
   let startTime = '';
   let endTime = '';
   switch (type) {
@@ -54,8 +68,8 @@ export function timePeriod (type) {
       break
     }
     case '1': {
-      startTime = dateFormat(date, 'YYYY-MM-DD 00:00:00');
-      endTime = dateFormat(date, 'YYYY-MM-DD 00:00:00');
+      startTime = dateFormat(date, fmt);
+      endTime = dateFormat(date, fmt);
       break
     }
     case '2': {
@@ -64,17 +78,17 @@ export function timePeriod (type) {
         num = 7
       }
       date.setDate(date.getDate() - num + 1);
-      startTime = dateFormat(date, 'YYYY-MM-DD 00:00:00');
+      startTime = dateFormat(date, fmt);
       date.setDate(date.getDate() + 6);
-      endTime = dateFormat(date, 'YYYY-MM-DD 00:00:00');
+      endTime = dateFormat(date, fmt);
       break
     }
     case '3': {
       date.setDate(1);
-      startTime = dateFormat(date, 'YYYY-MM-DD 00:00:00');
+      startTime = dateFormat(date, fmt);
       date.setMonth(date.getMonth() + 1);
       date.setDate(date.getDate() - 1);
-      endTime = dateFormat(date, 'YYYY-MM-DD 00:00:00');
+      endTime = dateFormat(date, fmt);
       break
     }
   }

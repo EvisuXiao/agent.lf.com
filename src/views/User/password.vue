@@ -7,7 +7,7 @@
         <x-input type="password" title="确认密码" placeholder="再次输入密码" v-model="cfmPwd"></x-input>
       </group>
       <group>
-        <x-button class="button-circle" :disabled="!oldPwd || !newPwd" type="primary" @click.native="submit">修改密码</x-button>
+        <x-button class="button-circle" :disabled="!oldPwd || !newPwd || !cfmPwd" type="primary" @click.native="submit">修改密码</x-button>
       </group>
     </div>
   </layout>
@@ -47,10 +47,10 @@
           }
           changePwd(this.oldPwd, this.newPwd)
             .then(() => {
-              this.oldPwd = '';
-              this.newPwd = '';
-              this.cfmPwd = '';
-              this.showToast('修改成功')
+              this.showToast('修改成功');
+              setTimeout(() => {
+                this.$router.push({path: '/login'})
+              }, 2000)
             })
         })
       }
