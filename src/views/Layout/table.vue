@@ -134,4 +134,10 @@
     right: 0;
     overflow: hidden;
   }
+
+  html, body {
+    height: 100%;
+    width: 100%;
+    overflow-x: hidden;
+  }
 </style>
