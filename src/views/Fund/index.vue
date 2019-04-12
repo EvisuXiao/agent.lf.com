@@ -1,5 +1,5 @@
 <template>
-  <layout-table title="资金记录" show-icon :getData="fetchData" @search-do="refresh">
+  <layout-table ref="table" title="资金记录" show-icon :list.sync="list" :searched.sync="searched" :getData="fetchData">
     <div>
       <group :gutter="0">
         <x-table :cell-bordered="false">
@@ -41,7 +41,7 @@
     XInput,
     XTable
   } from 'vux'
-  import { milli2Datetime, needRefreshList, levelName, defalutPeriod } from '../../utils'
+  import { milli2Datetime, levelName, defalutPeriod } from '../../utils'
   import { getRebateList } from '../../api'
 
   export default {
@@ -57,6 +57,8 @@
     },
     data () {
       return {
+        list: [],
+        searched: false,
         mode: '',
         curTab: 0,
         typeList: [
@@ -84,11 +86,6 @@
         endTime: []
       }
     },
-    computed: {
-      list: function () {
-        return this.$store.getters.listTmp
-      }
-    },
     created () {
       this.init()
     },
@@ -103,19 +100,16 @@
         }
       },
       fetchData (page, pageSize) {
+        const isSearched = this.$refs.table.isSearched();
         return new Promise(resolve => {
-          getRebateList(page, pageSize, 0, 0, this.type[0], this.startTime, this.endTime).then(response => {
+          getRebateList(page, pageSize, 0, 0, this.type[0], isSearched ? this.startTime : '', isSearched ? this.endTime : '').then(response => {
             let newList = [];
             for (let i in response.info) {
               newList.push(this.formatList(response.info[i], response.userInfo))
             }
-            this.total = response.count;
             resolve(newList)
           })
         })
-      },
-      refresh () {
-        needRefreshList()
       },
       milli2Datetime (ms, fmt = 'YYYY-MM-DD HH:mm:ss') {
         return milli2Datetime(ms, fmt)

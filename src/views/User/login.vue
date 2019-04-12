@@ -5,8 +5,12 @@
     </div>
 
     <group>
-      <x-input title="账号" required v-model="name" placeholder="请输入ID或手机号"></x-input>
-      <x-input title="密码" required type="password" v-model="pwd" placeholder="请输入密码" @keyup.enter.native="login"></x-input>
+      <x-input required v-model="name" placeholder="请输入ID或手机号">
+        <span slot="label" class="icon-padding"><v-icon name="user"></v-icon></span>
+      </x-input>
+      <x-input required type="password" v-model="pwd" placeholder="请输入密码" @keyup.enter.native="login">
+        <span slot="label" class="icon-padding"><v-icon name="lock"></v-icon></span>
+      </x-input>
       <cell>
         <check-icon slot="title" :value.sync="remember" type="plain">记住我</check-icon>
         <span @click="forget">忘记密码</span>
@@ -20,12 +24,14 @@
 
 <script>
   import { cookie, base64, Group, Cell, CheckIcon, XInput, XButton } from 'vux'
+  import Icon from 'vue-awesome/components/Icon'
   import { login } from '../../api'
   export default {
     components: {
       Group,
       Cell,
       CheckIcon,
+      'v-icon': Icon,
       XInput,
       XButton
     },
@@ -92,5 +98,9 @@
     text-align: center;
     width: 100%;
     height: 100%
+  }
+  .icon-padding {
+    padding-left: 10px;
+    padding-right: 25px;
   }
 </style>

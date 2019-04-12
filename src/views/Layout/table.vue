@@ -1,5 +1,5 @@
 <template>
-  <layout :title="title" :show-icon="showIcon" @search-do="$emit('search-do')">
+  <layout :title="title" :show-icon="showIcon" @search-do="onPullingDown(true)">
     <div slot="header" ref="header"><slot name="header"></slot></div>
     <div class="position-box" :style="{ top: headerHeight + 'px', bottom: bottomHeight + 'px' }">
       <vue-better-scroll
@@ -21,7 +21,6 @@
 <script>
   import Layout from './index'
   import VueBetterScroll from 'vue2-better-scroll'
-  import { needRefreshList } from '../../utils'
 
   export default {
     name: 'LayoutTable',
@@ -34,6 +33,14 @@
         type: String,
         default: ''
       },
+      list: {
+        type: Array,
+        default: []
+      },
+      searched: {
+        type: Boolean,
+        default: false
+      },
       showIcon: {
         type: Boolean,
         default: false
@@ -45,7 +52,8 @@
     },
     data () {
       return {
-        list: [],
+        innerList: [],
+        innerSearched: false,
         page: 1,
         pageSize: 20,
         pullDownCfg: true,
@@ -54,40 +62,36 @@
         bottomHeight: ''
       }
     },
+    watch: {
+      innerList: function (val) {
+        this.$emit('update:list', val)
+      },
+      innerSearched: function (val) {
+        this.$emit('update:Searched', val)
+      }
+    },
     mounted () {
       this.$nextTick(() => {
         this.headerHeight = this.$refs.header.offsetHeight + 46;
         this.bottomHeight = this.$refs.footer.offsetHeight;
       });
       this.$refs.scroll.initScroll();
-      // this.onPullingDown()
-      needRefreshList()
-    },
-    computed: {
-      needRefresh: function () {
-        return this.$store.getters.listRefresh
-      }
-    },
-    watch: {
-      needRefresh: function (val) {
-        if (val) {
-          this.$refs.scroll.scrollTo(0, 0, 50);
-          this.onPullingDown();
-          this.$store.commit('setListRefresh', false)
-        }
-      }
+      this.onPullingDown()
     },
     methods: {
-      onPullingDown () {
+      onPullingDown (searched = null) {
+        this.$refs.scroll.scrollTo(0, 0, 50);
+        if (searched !== null) {
+          this.searched = searched
+        }
         this.getData(1, this.pageSize).then(data => {
           let list = data;
           if (list === undefined) {
             list = []
           }
-          this.list = list;
+          this.innerList = list;
           this.page = 1;
-          this.$refs.scroll.forceUpdate(this.list.length >= this.pageSize);
-          this.$store.commit('setListTmp', this.list);
+          this.$refs.scroll.forceUpdate(this.innerList.length >= this.pageSize);
           this.$nextTick(() => {
             this.$refs.scroll.refresh()
           })
@@ -99,7 +103,7 @@
           if (list === undefined) {
             list = []
           }
-          this.list = this.list.concat(list);
+          this.innerList = this.innerList.concat(list);
           // 最后一页
           if (list.length < this.pageSize) {
             this.$refs.scroll.forceUpdate(false)
@@ -107,11 +111,13 @@
             this.$refs.scroll.forceUpdate(true);
             this.page++
           }
-          this.$store.commit('setListTmp', this.list);
           this.$nextTick(() => {
             this.$refs.scroll.refresh()
           })
         })
+      },
+      isSearched () {
+        return this.searched
       }
     },
     beforeDestroy () {

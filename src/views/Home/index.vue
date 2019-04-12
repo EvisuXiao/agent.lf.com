@@ -26,24 +26,51 @@
     <!--返利模式-->
     <group v-if="rebateMode">
       <cell title="我的收益" is-link link="/fund/income">
-        <div slot>今日收益<span style="color: red; ">{{ uInfo.todayRebate }}</span>元</div>
+        <v-icon slot="icon" class="icon-padding" name="donate"></v-icon>
+        <div>今日收益<span style="color: red; ">{{ uInfo.todayRebate }}</span>元</div>
       </cell>
-      <cell title="我的代理" is-link link="/team"></cell>
-      <cell title="钻石充值" is-link link="/diamond/charge"></cell>
-      <cell title="我的账单" is-link link="/diamond"></cell>
-      <cell title="资金记录" is-link link="/fund"></cell>
-      <cell title="消息中心" is-link link="/notice"></cell>
-      <cell title="帮助中心" is-link link="/help"></cell>
+      <cell title="我的代理" is-link link="/team">
+        <v-icon slot="icon" class="icon-padding" name="user-friends"></v-icon>
+      </cell>
+      <cell title="钻石充值" is-link link="/diamond/charge">
+        <v-icon slot="icon" class="icon-padding" name="coins"></v-icon>
+      </cell>
+      <cell title="我的账单" is-link link="/diamond">
+        <v-icon slot="icon" class="icon-padding" name="list"></v-icon>
+      </cell>
+      <cell title="资金记录" is-link link="/fund">
+        <v-icon slot="icon" class="icon-padding" name="yen-sign"></v-icon>
+      </cell>
+      <cell title="消息中心" is-link link="/notice">
+        <v-icon slot="icon" class="icon-padding" name="envelope"></v-icon>
+      </cell>
+      <cell title="帮助中心" is-link link="/help">
+        <v-icon slot="icon" class="icon-padding" name="question-circle"></v-icon>
+      </cell>
     </group>
     <!--普通模式-->
     <group v-else>
-      <cell title="我的代理" is-link link="/team"></cell>
-      <cell title="钻石充值" is-link link="/diamond/charge"></cell>
-      <cell title="出售钻石" is-link link="/diamond/sell"></cell>
-      <cell title="我的账单" is-link link="/diamond"></cell>
-      <cell title="代理申请" is-link link="/team/apply"></cell>
-      <cell title="消息中心" is-link link="/notice"></cell>
-      <cell title="帮助中心" is-link link="/help"></cell>
+      <cell title="我的代理" is-link link="/team">
+        <v-icon slot="icon" class="icon-padding" name="user-friends"></v-icon>
+      </cell>
+      <cell title="钻石充值" is-link link="/diamond/charge">
+        <v-icon slot="icon" class="icon-padding" name="coins"></v-icon>
+      </cell>
+      <cell title="出售钻石" is-link link="/diamond/sell">
+        <v-icon slot="icon" class="icon-padding" name="shopping-cart"></v-icon>
+      </cell>
+      <cell title="我的账单" is-link link="/diamond">
+        <v-icon slot="icon" class="icon-padding" name="list"></v-icon>
+      </cell>
+      <cell title="代理申请" is-link link="/team/apply">
+        <v-icon slot="icon" class="icon-padding" name="hand-paper"></v-icon>
+      </cell>
+      <cell title="消息中心" is-link link="/notice">
+        <v-icon slot="icon" class="icon-padding" name="envelope"></v-icon>
+      </cell>
+      <cell title="帮助中心" is-link link="/help">
+        <v-icon slot="icon" class="icon-padding" name="question-circle"></v-icon>
+      </cell>
     </group>
     <group>
       <x-button class="button-circle" type="warn" @click.native="logout">退出</x-button>
@@ -60,6 +87,7 @@
     Card,
     XButton
   } from 'vux'
+  import Icon from 'vue-awesome/components/Icon'
   import { logout, getNotice } from '../../api'
   import { isRebateMode, defalutAvatar } from '../../utils'
 
@@ -68,6 +96,7 @@
       Group,
       Cell,
       Card,
+      'v-icon': Icon,
       XButton
     },
     computed: {
@@ -138,5 +167,10 @@
 
   .button-circle {
     border-radius: 99px;
+  }
+
+  .icon-padding {
+    padding-left: 10px;
+    padding-right: 25px;
   }
 </style>

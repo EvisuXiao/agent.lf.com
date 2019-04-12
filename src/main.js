@@ -7,6 +7,18 @@ import router from './router';
 import './utils/permission' // permission control
 import { Flexbox, FlexboxItem, ToastPlugin, ConfirmPlugin, AlertPlugin, LoadingPlugin } from 'vux';
 import store from './store'
+// icons
+import 'vue-awesome/icons/coins';
+import 'vue-awesome/icons/donate';
+import 'vue-awesome/icons/envelope';
+import 'vue-awesome/icons/hand-paper';
+import 'vue-awesome/icons/list';
+import 'vue-awesome/icons/lock';
+import 'vue-awesome/icons/question-circle';
+import 'vue-awesome/icons/shopping-cart';
+import 'vue-awesome/icons/user';
+import 'vue-awesome/icons/user-friends';
+import 'vue-awesome/icons/yen-sign';
 
 FastClick.attach(document.body);
 

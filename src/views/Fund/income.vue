@@ -1,5 +1,5 @@
 <template>
-  <layout-table title="我的收益" :show-icon="!mType" :getData="fetchData" @search-do="refresh">
+  <layout-table ref="table" title="我的收益" :list.sync="list" :show-icon="!mType" :getData="fetchData">
     <tab slot="header" v-if="!mType">
       <tab-item selected @on-item-click="onItemClick">收益记录</tab-item>
       <tab-item @on-item-click="onItemClick">收益统计</tab-item>
@@ -56,7 +56,7 @@
     XInput,
     XTable
   } from 'vux'
-  import { milli2Datetime, needRefreshList, levelName, defalutPeriod, timePeriod } from '../../utils'
+  import { milli2Datetime, levelName, defalutPeriod, timePeriod } from '../../utils'
   import { getRebateList, getRebateStat } from '../../api'
 
   export default {
@@ -72,6 +72,7 @@
     },
     data () {
       return {
+        list: [],
         curTab: 0,
         mid: 0,
         mType: 0,
@@ -100,11 +101,6 @@
         ]
       }
     },
-    computed: {
-      list: function () {
-        return this.$store.getters.listTmp
-      }
-    },
     watch: {
       timeType: function (val) {
         const time = timePeriod(val[0]);
@@ -130,27 +126,23 @@
         }
       },
       fetchData (page, pageSize) {
+        const searched = this.$refs.table.isSearched();
         if (this.curTab === 0) {
           return new Promise(resolve => {
-            getRebateList(page, pageSize, this.mid, this.mType, 'pay', this.startTime, this.endTime).then(response => {
+            getRebateList(page, pageSize, this.mid, this.mType, 'pay', searched || this.mType ? this.startTime : '', searched || this.mType ? this.endTime : '').then(response => {
               let newList = [];
               for (let i in response.info) {
                 newList.push(this.formatList(response.info[i], response.userInfo))
               }
-              this.total = response.count;
               resolve(newList)
             })
           })
         }
         return new Promise(resolve => {
-          getRebateStat(page, pageSize, this.startTime, this.endTime).then(response => {
-            this.total = response.count;
+          getRebateStat(page, pageSize, searched ? this.startTime : '', searched ? this.endTime : '').then(response => {
             resolve(response.info)
           })
         })
-      },
-      refresh () {
-        needRefreshList()
       },
       onItemClick (index) {
         if (this.curTab !== index) {
@@ -160,9 +152,11 @@
             this.startTime = time[0];
             this.endTime = time[1]
           } else {
-            this.timeType = ['0']
+            this.timeType = ['0'];
+            this.startTime = '';
+            this.endTime = ''
           }
-          this.refresh()
+          this.$refs.table.onPullingDown(false)
         }
       },
       milli2Datetime (ms, fmt = 'YYYY-MM-DD HH:mm:ss') {

@@ -1,5 +1,5 @@
 <template>
-  <layout-table title="我的账单" :show-icon="true" :getData="fetchData" @search-do="refresh">
+  <layout-table ref="table" title="我的账单" :list.sync="list" :show-icon="true" :getData="fetchData">
     <tab slot="header" v-if="!mid">
       <tab-item v-for="(value, key) in tabLabel" :key="key" :selected="parseInt(key) === 0" @on-item-click="onItemClick(key)">{{ value }}</tab-item>
     </tab>
@@ -43,7 +43,7 @@
     TabItem,
     XTable
   } from 'vux'
-  import { milli2Datetime, levelName, needRefreshList, defalutPeriod } from '../../utils'
+  import { milli2Datetime, levelName, defalutPeriod } from '../../utils'
   import { getDiamondChangeList } from '../../api'
 
   export default {
@@ -57,16 +57,12 @@
     },
     data () {
       return {
+        list: [],
         curTab: 0,
         tabLabel: ['全部', '充值', '出售', '奖励', '茶楼'],
         mid: 0,
         startTime: '',
         endTime: ''
-      }
-    },
-    computed: {
-      list: function () {
-        return this.$store.getters.listTmp
       }
     },
     created () {
@@ -84,19 +80,16 @@
         }
       },
       fetchData (page, pageSize) {
+        const searched = this.$refs.table.isSearched();
         return new Promise(resolve => {
-          getDiamondChangeList(this.mid, this.curTab, page, pageSize, this.startTime, this.endTime).then(response => {
+          getDiamondChangeList(this.mid, this.curTab, page, pageSize, searched ? this.startTime : '', searched ? this.endTime : '').then(response => {
             let newList = [];
             for (let i in response.info) {
               newList.push(this.formatList(response.info[i], response.userInfo))
             }
-            this.total = response.count;
             resolve(newList)
           })
         })
-      },
-      refresh () {
-        needRefreshList()
       },
       formatList (row, user) {
         if (row.type === 'trade') {
@@ -132,7 +125,7 @@
           const time = defalutPeriod();
           this.startTime = time[0];
           this.endTime = time[1];
-          this.refresh()
+          this.$refs.table.onPullingDown(false)
         }
       },
       milli2Datetime (ms, fmt = 'YYYY-MM-DD HH:mm:ss') {

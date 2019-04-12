@@ -5,7 +5,7 @@ import store from '../store'
 
 const PAGE_SIZE = 20;
 
-export function promise (url, data = {}, field = '') {
+function promise (url, data = {}, field = '') {
   store.commit('setLoading', true);
   let config = { url: url };
   if (data) {
