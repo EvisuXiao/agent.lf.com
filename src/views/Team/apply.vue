@@ -1,5 +1,5 @@
 <template>
-  <layout-table title="代理申请" :getData="fetchData">
+  <layout-table ref="table" title="代理申请" :list.sync="list" :getData="fetchData">
     <tab slot="header">
       <tab-item v-for="(value, key) in tabLabel" :key="key" :selected="key === 0" @on-item-click="onItemClick(key)">{{ value }}</tab-item>
     </tab>
@@ -45,7 +45,6 @@
     XTable
   } from 'vux'
   import { getApplyList, applyMember } from '../../api'
-  import { needRefreshList } from '../../utils'
 
   export default {
     components: {
@@ -59,14 +58,10 @@
     },
     data () {
       return {
+        list: [],
         curTab: 0,
         total: 0,
         tabLabel: ['全部', '申请中', '已通过', '被拒绝', '已取消']
-      }
-    },
-    computed: {
-      list: function () {
-        return this.$store.getters.listTmp
       }
     },
     methods: {
@@ -78,13 +73,10 @@
           })
         })
       },
-      refresh () {
-        needRefreshList()
-      },
       onItemClick (index) {
         if (this.curTab !== index) {
           this.curTab = index;
-          this.refresh()
+          this.$refs.table.onPullingDown()
         }
       },
       statusMap (status) {

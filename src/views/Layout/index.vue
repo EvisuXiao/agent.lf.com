@@ -20,7 +20,7 @@
     </view-box>
     <!--搜索框-->
     <div v-transfer-dom>
-      <x-dialog v-model="showDialog" hide-on-blur class="dialog-demo" :mask-z-index="500">
+      <x-dialog v-model="showDialog" hide-on-blur :mask-z-index="500" :dialog-style="{ top: '-160px' }">
         <slot name="search"></slot>
         <group :gutter="0">
           <x-button mini action-type="button" @click.native="search">确定</x-button>

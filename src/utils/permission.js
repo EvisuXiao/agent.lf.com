@@ -14,27 +14,16 @@ router.beforeEach((to, from, next) => {
     } else {
       storeMyInfo().then(); // 获取用户信息
       if (to.path === '/login') {
-        next({path: '/'})
+        next({ path: '/' })
       } else {
         next()
       }
-      // store.dispatch('generateRoutes').then(() => { // 根据roles权限生成可访问的路由表
-      //   if (to.path === '/login') {
-      //     next({path: '/'})
-      //   } else if (store.getters.userInfo.role === 'admin' || store.getters.userMenu.indexOf(to.path) > -1) {
-      //     next()
-      //   } else {
-      //     next({path: '/404'})
-      //   }
-      // }).catch(() => {
-      //   next({path: '/login'})
-      // })
     }
   } else {
     if (whiteList.indexOf(to.path) !== -1) { // 在免登录白名单，直接进入
       next();
     } else {
-      next({path: '/login'}); // 否则全部重定向到登录页
+      next({ path: '/login' }); // 否则全部重定向到登录页
     }
   }
 });

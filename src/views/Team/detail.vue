@@ -20,8 +20,8 @@
         <cell title="昨日茶楼消耗">{{ info.gameCost }}</cell>
       </group>
       <group title="他的代理">
-        <cell v-if="info.zdCount" title="直属总代理">{{ info.zdCount }}</cell>
-        <cell title="直属代理" is-link :link="{ path: '/team', query: { mid: info.mid } }">{{ info.dlCount }}</cell>
+        <cell v-if="info.zdCount" title="直属总代理" is-link :link="{ path: '/team', query: { mid: info.mid, level: 2 } }">{{ info.zdCount }}</cell>
+        <cell title="直属代理" is-link :link="{ path: '/team', query: { mid: info.mid, level: 1 } }">{{ info.dlCount }}</cell>
       </group>
       <div v-if="!rebateMode">
         <group>

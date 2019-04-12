@@ -1,5 +1,5 @@
 <template>
-  <layout-table title="我的代理" :show-icon="!other" :getData="fetchData" @search-do="refresh">
+  <layout-table ref="table" title="我的代理" :list.sync="list" :show-icon="!other" :getData="fetchData">
     <tab slot="header" v-if="!other">
       <tab-item v-for="(value, key) in tabLabel" :key="key" :selected="parseInt(key) === 0" @on-item-click="onItemClick(key)">{{ value }}</tab-item>
     </tab>
@@ -50,7 +50,7 @@
     XInput,
     XTable
   } from 'vux'
-  import { milli2Datetime, levelTab, isRebateMode, needRefreshList, levelName } from '../../utils'
+  import { milli2Datetime, levelTab, isRebateMode, levelName } from '../../utils'
   import { getMemberList } from '../../api'
 
   export default {
@@ -66,6 +66,7 @@
     },
     data () {
       return {
+        list: [],
         curTab: 0,
         total: 0,
         other: false,
@@ -73,9 +74,6 @@
       }
     },
     computed: {
-      list: function () {
-        return this.$store.getters.listTmp
-      },
       tabLabel: function () {
         return levelTab()
       },
@@ -88,8 +86,9 @@
     },
     methods: {
       init () {
-        if (this.$route.query.mid) {
+        if (this.$route.query.mid && this.$route.query.level) {
           this.searchMid = this.$route.query.mid;
+          this.curTab = this.$route.query.level;
           this.other = true
         }
       },
@@ -101,16 +100,13 @@
           })
         })
       },
-      refresh () {
-        needRefreshList()
-      },
       onItemClick (index) {
         if (this.curTab !== index) {
           this.curTab = index;
           if (!this.other) {
             this.searchMid = ''
           }
-          this.refresh()
+          this.$refs.table.onPullingDown(false)
         }
       },
       milli2Datetime (ms, fmt = 'YYYY-MM-DD HH:mm:ss') {
