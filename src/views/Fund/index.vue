@@ -99,10 +99,9 @@
           this.type = [this.mode]
         }
       },
-      fetchData (page, pageSize) {
-        const isSearched = this.$refs.table.isSearched();
+      fetchData (page, pageSize, searched = false) {
         return new Promise(resolve => {
-          getRebateList(page, pageSize, 0, 0, this.type[0], isSearched ? this.startTime : '', isSearched ? this.endTime : '').then(response => {
+          getRebateList(page, pageSize, 0, 0, this.type[0], searched ? this.startTime : '', searched ? this.endTime : '').then(response => {
             let newList = [];
             for (let i in response.info) {
               newList.push(this.formatList(response.info[i], response.userInfo))

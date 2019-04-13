@@ -79,8 +79,7 @@
           this.endTime = time[1]
         }
       },
-      fetchData (page, pageSize) {
-        const searched = this.$refs.table.isSearched();
+      fetchData (page, pageSize, searched = false) {
         return new Promise(resolve => {
           getDiamondChangeList(this.mid, this.curTab, page, pageSize, searched ? this.startTime : '', searched ? this.endTime : '').then(response => {
             let newList = [];

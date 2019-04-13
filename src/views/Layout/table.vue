@@ -37,10 +37,6 @@
         type: Array,
         default: []
       },
-      searched: {
-        type: Boolean,
-        default: false
-      },
       showIcon: {
         type: Boolean,
         default: false
@@ -53,7 +49,7 @@
     data () {
       return {
         innerList: [],
-        innerSearched: false,
+        searched: false,
         page: 1,
         pageSize: 20,
         pullDownCfg: true,
@@ -65,9 +61,6 @@
     watch: {
       innerList: function (val) {
         this.$emit('update:list', val)
-      },
-      innerSearched: function (val) {
-        this.$emit('update:Searched', val)
       }
     },
     mounted () {
@@ -84,7 +77,7 @@
         if (searched !== null) {
           this.searched = searched
         }
-        this.getData(1, this.pageSize).then(data => {
+        this.getData(1, this.pageSize, this.searched).then(data => {
           let list = data;
           if (list === undefined) {
             list = []
@@ -98,7 +91,7 @@
         })
       },
       onPullingUp () {
-        this.getData(this.page + 1, this.pageSize).then(data => {
+        this.getData(this.page + 1, this.pageSize, this.searched).then(data => {
           let list = data;
           if (list === undefined) {
             list = []
@@ -115,9 +108,6 @@
             this.$refs.scroll.refresh()
           })
         })
-      },
-      isSearched () {
-        return this.searched
       }
     },
     beforeDestroy () {

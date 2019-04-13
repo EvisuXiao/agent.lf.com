@@ -65,7 +65,7 @@
       }
     },
     methods: {
-      fetchData (page, pageSize) {
+      fetchData (page, pageSize, searched = false) {
         return new Promise(resolve => {
           getApplyList(page, pageSize, this.curTab).then(response => {
             this.total = response.count;

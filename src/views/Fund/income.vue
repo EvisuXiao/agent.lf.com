@@ -116,7 +116,10 @@
         if (this.$route.query.mid && this.$route.query.timeType && this.$route.query.mType) {
           this.mid = this.$route.query.mid;
           this.mType = this.$route.query.mType;
-          this.timeType = [this.$route.query.timeType]
+          this.timeType = [this.$route.query.timeType];
+          const time = timePeriod(this.$route.query.timeType);
+          this.startTime = time[0];
+          this.endTime = time[1]
         } else {
           if (this.curTab === 0) {
             const time = defalutPeriod();
@@ -125,8 +128,7 @@
           }
         }
       },
-      fetchData (page, pageSize) {
-        const searched = this.$refs.table.isSearched();
+      fetchData (page, pageSize, searched = false) {
         if (this.curTab === 0) {
           return new Promise(resolve => {
             getRebateList(page, pageSize, this.mid, this.mType, 'pay', searched || this.mType ? this.startTime : '', searched || this.mType ? this.endTime : '').then(response => {

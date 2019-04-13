@@ -92,7 +92,7 @@
           this.other = true
         }
       },
-      fetchData (page, pageSize) {
+      fetchData (page, pageSize, searched = false) {
         return new Promise(resolve => {
           getMemberList(page, pageSize, this.searchMid, this.curTab).then(response => {
             this.total = response.count;
