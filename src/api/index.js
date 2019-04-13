@@ -42,7 +42,9 @@ export function logout () {
 export async function storeMyInfo () {
   if (!store.getters.userInfo.mid) {
     await promise(Config.MyInfo, {}, 'info').then(data => {
-      store.commit('setInfo', data);
+      data.name = data.name ? unescape(data.name) : '';
+      data.recName = data.recName ? unescape(data.recName) : '';
+      store.commit('setInfo', data)
     })
   }
 }
@@ -100,13 +102,25 @@ export function getMemberList (page = 1, limit = PAGE_SIZE, mid = 0, level = 0) 
   if (mid) {
     params.mid = intVal(mid)
   }
-  return promise(Config.MemberList, params)
+  return new Promise(resolve => {
+    promise(Config.MemberList, params).then(data => {
+      for (let i in data.info) {
+        data.info[i].name = data.info[i].name ? unescape(data.info[i].name) : ''
+      }
+      resolve(data)
+    })
+  })
 }
 
 export function getMemberInfo (mid) {
-  return promise(Config.MemberInfo, {
-    mid: intVal(mid)
-  }, 'info')
+  return new Promise(resolve => {
+    promise(Config.MemberInfo, {
+      mid: intVal(mid)
+    }, 'info').then(data => {
+      data.name = data.name ? unescape(data.name) : '';
+      resolve(data)
+    })
+  })
 }
 
 export function upgradeMember (mid, level, phone) {
@@ -118,9 +132,14 @@ export function upgradeMember (mid, level, phone) {
 }
 
 export function getUserInfo (uid) {
-  return promise(Config.UserInfo, {
-    uid: intVal(uid)
-  }, 'info')
+  return new Promise(resolve => {
+    promise(Config.UserInfo, {
+      uid: intVal(uid)
+    }, 'info').then(data => {
+      data.name = data.name ? unescape(data.name) : '';
+      resolve(data)
+    })
+  })
 }
 
 export function chargeDiamond (uid, num, rmb = 0, note = '') {
@@ -141,13 +160,20 @@ export function getDiamondChangeList (mid = 0, type = 0, page = 1, limit = PAGE_
   if (end) {
     etime = (new Date(end)).getTime()
   }
-  return promise(Config.DiamondChange, {
-    mid: intVal(mid),
-    type: intVal(type),
-    page: intVal(page),
-    limit: intVal(limit),
-    stime: intVal(stime),
-    etime: intVal(etime)
+  return new Promise(resolve => {
+    promise(Config.DiamondChange, {
+      mid: intVal(mid),
+      type: intVal(type),
+      page: intVal(page),
+      limit: intVal(limit),
+      stime: intVal(stime),
+      etime: intVal(etime)
+    }).then(data => {
+      for (let i in data.userInfo) {
+        data.userInfo[i] = data.userInfo[i] ? unescape(data.userInfo[i]) : ''
+      }
+      resolve(data)
+    })
   })
 }
 
@@ -186,7 +212,17 @@ export function getApplyList (page = 1, limit = PAGE_SIZE, stat = 0) {
   if (stat) {
     params.stat = intVal(stat) - 1
   }
-  return promise(Config.ApplyList, params)
+  return new Promise(resolve => {
+    promise(Config.ApplyList, params).then(data => {
+      for (let i in data.info) {
+        data.info[i].name = data.info[i].name ? unescape(data.info[i].name) : ''
+      }
+      for (let i in data.userInfo) {
+        data.userInfo[i] = data.userInfo[i] ? unescape(data.userInfo[i]) : ''
+      }
+      resolve(data)
+    })
+  })
 }
 
 export function applyMember (uid, phone, stat = 0) {
@@ -222,7 +258,14 @@ export function getRebateList (page = 1, limit = PAGE_SIZE, mid = 0, mType = 0, 
   if (type) {
     params.type = type
   }
-  return promise(Config.RebateList, params)
+  return new Promise(resolve => {
+    promise(Config.RebateList, params).then(data => {
+      for (let i in data.userInfo) {
+        data.userInfo[i] = data.userInfo[i] ? unescape(data.userInfo[i]) : ''
+      }
+      resolve(data)
+    })
+  })
 }
 
 export function getRebateMemberStat (mid, start = '', end = '') {
@@ -250,11 +293,18 @@ export function getRebateStat (page = 1, limit = PAGE_SIZE, start = '', end = ''
   if (end) {
     etime = (new Date(end)).getTime()
   }
-  return promise(Config.RebateStat, {
-    page: intVal(page),
-    limit: intVal(limit),
-    stime: intVal(stime),
-    etime: intVal(etime)
+  return new Promise(resolve => {
+    promise(Config.RebateStat, {
+      page: intVal(page),
+      limit: intVal(limit),
+      stime: intVal(stime),
+      etime: intVal(etime)
+    }).then(data => {
+      for (let i in data.info) {
+        data.info[i].name = data.info[i].name ? unescape(data.info[i].name) : ''
+      }
+      resolve(data)
+    })
   })
 }
 
